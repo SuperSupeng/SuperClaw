@@ -1,0 +1,32 @@
+{
+  "version": "1",
+  "providers": {
+    "openai": {
+      "type": "openai",
+      "apiKey": { "env": "OPENAI_API_KEY" }
+    }
+  },
+  "agents": [
+    {
+      "id": "assistant",
+      "name": "Assistant",
+      "soul": "agents/assistant/SOUL.md",
+      "tier": "worker",
+      "lifecycle": "persistent",
+      "model": {
+        "primary": "gpt-4o"
+      }
+    }
+  ],
+  "channels": {
+    "cli": {
+      "type": "cli"
+    }
+  },
+  "bindings": [
+    {
+      "agent": "assistant",
+      "channel": "cli"
+    }
+  ]
+}

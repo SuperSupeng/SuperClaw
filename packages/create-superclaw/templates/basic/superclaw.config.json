@@ -1,0 +1,44 @@
+{
+  "version": "0.1.0",
+  "name": "{{PROJECT_NAME}}",
+  "providers": {
+    "default": {
+      "id": "default",
+      "baseUrl": "${OPENAI_BASE_URL:=https://api.openai.com/v1}",
+      "apiKey": "${OPENAI_API_KEY}",
+      "api": "openai",
+      "models": ["gpt-4o", "gpt-4o-mini"]
+    }
+  },
+  "agents": [
+    {
+      "id": "{{AGENT_ID}}",
+      "name": "{{AGENT_NAME}}",
+      "soul": "./agents/{{AGENT_ID}}/SOUL.md",
+      "tier": "executive",
+      "lifecycle": "persistent",
+      "model": {
+        "primary": "gpt-4o",
+        "fallbacks": ["gpt-4o-mini"]
+      }
+    }
+  ],
+  "channels": {
+    "cli": {
+      "type": "cli",
+      "enabled": true,
+      "accounts": {
+        "default": {
+          "id": "default"
+        }
+      }
+    }
+  },
+  "bindings": [
+    {
+      "channel": "cli",
+      "account": "default",
+      "agent": "{{AGENT_ID}}"
+    }
+  ]
+}

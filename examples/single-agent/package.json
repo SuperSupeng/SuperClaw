@@ -1,0 +1,12 @@
+{
+  "name": "superclaw-single-agent-example",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "superclaw dev",
+    "start": "superclaw start"
+  },
+  "dependencies": {
+    "@superclaw/cli": "workspace:*"
+  }
+}

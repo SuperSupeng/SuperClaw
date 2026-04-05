@@ -1,0 +1,104 @@
+{
+  "version": "1",
+  "providers": {
+    "openai": {
+      "type": "openai",
+      "apiKey": { "env": "OPENAI_API_KEY" }
+    }
+  },
+  "agents": [
+    {
+      "id": "secretary",
+      "name": "Secretary",
+      "soul": "agents/secretary/SOUL.md",
+      "tier": "coordinator",
+      "lifecycle": "persistent",
+      "team": "content-team",
+      "model": {
+        "primary": "gpt-4o"
+      },
+      "delegation": {
+        "allowAgents": ["researcher", "writer"],
+        "requireContextDigest": true
+      }
+    },
+    {
+      "id": "researcher",
+      "name": "Researcher",
+      "soul": "agents/researcher/SOUL.md",
+      "tier": "worker",
+      "lifecycle": "persistent",
+      "team": "content-team",
+      "model": {
+        "primary": "gpt-4o"
+      },
+      "tools": [
+        {
+          "type": "cli",
+          "name": "curl",
+          "description": "HTTP client for fetching web resources"
+        },
+        {
+          "type": "cli",
+          "name": "jq",
+          "description": "JSON processor"
+        }
+      ]
+    },
+    {
+      "id": "writer",
+      "name": "Writer",
+      "soul": "agents/writer/SOUL.md",
+      "tier": "worker",
+      "lifecycle": "persistent",
+      "team": "content-team",
+      "model": {
+        "primary": "gpt-4o"
+      }
+    }
+  ],
+  "teams": [
+    {
+      "id": "content-team",
+      "name": "Content Team",
+      "agents": ["secretary", "researcher", "writer"]
+    }
+  ],
+  "channels": {
+    "cli": {
+      "type": "cli"
+    }
+  },
+  "bindings": [
+    {
+      "agent": "secretary",
+      "channel": "cli"
+    }
+  ],
+  "signalTypes": [
+    {
+      "id": "task.research",
+      "schema": {
+        "topic": "string",
+        "depth": "string",
+        "deadline": "string"
+      }
+    },
+    {
+      "id": "task.write",
+      "schema": {
+        "title": "string",
+        "outline": "string",
+        "tone": "string",
+        "researchContext": "string"
+      }
+    },
+    {
+      "id": "task.complete",
+      "schema": {
+        "result": "string",
+        "summary": "string"
+      }
+    }
+  ]
+}

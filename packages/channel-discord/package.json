@@ -1,0 +1,25 @@
+{
+  "name": "@superclaw/channel-discord",
+  "version": "0.1.0",
+  "description": "Discord channel adapter for SuperClaw",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@superclaw/types": "workspace:*",
+    "discord.js": "^14.18.0"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@superclaw/channel-cli",
+  "version": "0.1.0",
+  "description": "CLI channel adapter for SuperClaw — interact with agents in the terminal",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@superclaw/types": "workspace:*",
+    "@clack/prompts": "^0.10.0"
+  }
+}

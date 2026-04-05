@@ -1,0 +1,75 @@
+{
+  "version": "0.1.0",
+  "name": "{{PROJECT_NAME}}",
+  "providers": {
+    "default": {
+      "id": "default",
+      "baseUrl": "${OPENAI_BASE_URL:=https://api.openai.com/v1}",
+      "apiKey": "${OPENAI_API_KEY}",
+      "api": "openai",
+      "models": ["gpt-4o", "gpt-4o-mini"]
+    }
+  },
+  "agents": [
+    {
+      "id": "secretary",
+      "name": "Secretary",
+      "soul": "./agents/secretary/SOUL.md",
+      "tier": "executive",
+      "lifecycle": "persistent",
+      "model": {
+        "primary": "gpt-4o",
+        "fallbacks": ["gpt-4o-mini"]
+      }
+    },
+    {
+      "id": "researcher",
+      "name": "Researcher",
+      "soul": "./agents/researcher/SOUL.md",
+      "tier": "specialist",
+      "lifecycle": "persistent",
+      "model": {
+        "primary": "gpt-4o",
+        "fallbacks": ["gpt-4o-mini"]
+      }
+    },
+    {
+      "id": "writer",
+      "name": "Writer",
+      "soul": "./agents/writer/SOUL.md",
+      "tier": "specialist",
+      "lifecycle": "persistent",
+      "model": {
+        "primary": "gpt-4o",
+        "fallbacks": ["gpt-4o-mini"]
+      }
+    }
+  ],
+  "teams": [
+    {
+      "id": "content-team",
+      "name": "Content Team",
+      "lead": "secretary",
+      "members": ["researcher", "writer"],
+      "strategy": "delegate"
+    }
+  ],
+  "channels": {
+    "cli": {
+      "type": "cli",
+      "enabled": true,
+      "accounts": {
+        "default": {
+          "id": "default"
+        }
+      }
+    }
+  },
+  "bindings": [
+    {
+      "channel": "cli",
+      "account": "default",
+      "agent": "secretary"
+    }
+  ]
+}

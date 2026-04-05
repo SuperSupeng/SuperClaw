@@ -1,0 +1,24 @@
+{
+  "name": "superclaw",
+  "version": "0.1.0",
+  "description": "SuperClaw CLI — build your digital workforce",
+  "type": "module",
+  "bin": {
+    "superclaw": "./dist/cli.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@superclaw/core": "workspace:*",
+    "@superclaw/types": "workspace:*",
+    "@superclaw/channel-discord": "workspace:*",
+    "@superclaw/channel-cli": "workspace:*",
+    "cac": "^6.7.14",
+    "picocolors": "^1.1.0"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@superclaw/types",
+  "version": "0.1.0",
+  "description": "Shared type definitions for SuperClaw",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  }
+}

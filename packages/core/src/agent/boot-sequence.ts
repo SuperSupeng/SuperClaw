@@ -1,0 +1,195 @@
+// ============================================================================
+// Boot Sequence — Agent 8 步启动序列
+// ============================================================================
+
+import type {
+  AgentConfig,
+  BootProgress,
+  BootStep,
+  MemoryManager,
+} from "@superclaw/types";
+import type { Logger } from "pino";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+
+/** Boot Sequence 依赖 */
+export interface BootDeps {
+  memoryManager: MemoryManager;
+  logger: Logger;
+}
+
+/** Boot Sequence 进度回调 */
+export type BootProgressCallback = (progress: BootProgress) => void;
+
+const BOOT_STEPS: BootStep[] = [
+  "load-company-state",
+  "load-soul",
+  "load-knowledge",
+  "load-user-profile",
+  "load-focus",
+  "load-signals",
+  "cleanup-expired",
+  "ready",
+];
+
+const DEFAULT_SOUL_TEMPLATE = `You are a helpful AI assistant. Follow the user's instructions carefully and provide accurate, helpful responses.`;
+
+/**
+ * 执行 8 步启动序列，返回构建好的 system prompt
+ */
+export async function runBootSequence(
+  config: AgentConfig,
+  deps: BootDeps,
+  onProgress?: BootProgressCallback,
+): Promise<string> {
+  const { memoryManager, logger } = deps;
+  const log = logger.child({ agentId: config.id, phase: "boot" });
+
+  const totalSteps = BOOT_STEPS.length;
+  const parts: string[] = [];
+
+  function emitProgress(step: BootStep, stepIndex: number, message: string): void {
+    onProgress?.({
+      step,
+      stepIndex,
+      totalSteps,
+      message,
+    });
+  }
+
+  // 1. load-company-state
+  {
+    const step: BootStep = "load-company-state";
+    const stepIndex = 0;
+    emitProgress(step, stepIndex, "Loading company state...");
+    try {
+      if (config.agentDir) {
+        const content = await memoryManager.load(config.agentDir, "company-state");
+        if (content) {
+          parts.push(`## Company State\n\n${content}`);
+          log.info("Company state loaded");
+        }
+      } else {
+        log.debug("No agentDir configured, skipping company state");
+      }
+    } catch (err) {
+      log.warn({ error: err }, "Failed to load company state, continuing");
+    }
+    emitProgress(step, stepIndex, "Company state loaded");
+  }
+
+  // 2. load-soul
+  {
+    const step: BootStep = "load-soul";
+    const stepIndex = 1;
+    emitProgress(step, stepIndex, "Loading soul...");
+    try {
+      let soulContent: string | null = null;
+
+      // 尝试从 agentDir 加载 SOUL.md
+      if (config.agentDir && config.soul) {
+        const soulPath = join(config.agentDir, config.soul);
+        try {
+          soulContent = await readFile(soulPath, "utf-8");
+        } catch {
+          // 文件不存在，尝试通过 memoryManager
+          soulContent = await memoryManager.load(config.agentDir, "soul");
+        }
+      }
+
+      if (soulContent) {
+        parts.unshift(`## Soul\n\n${soulContent}`);
+        log.info("Soul loaded from file");
+      } else {
+        parts.unshift(`## Soul\n\n${DEFAULT_SOUL_TEMPLATE}`);
+        log.warn("Soul file not found, using default template");
+      }
+    } catch (err) {
+      parts.unshift(`## Soul\n\n${DEFAULT_SOUL_TEMPLATE}`);
+      log.warn({ error: err }, "Failed to load soul, using default template");
+    }
+    emitProgress(step, stepIndex, "Soul loaded");
+  }
+
+  // 3. load-knowledge
+  {
+    const step: BootStep = "load-knowledge";
+    const stepIndex = 2;
+    emitProgress(step, stepIndex, "Loading knowledge...");
+    try {
+      // P0: 简单拼接知识源配置信息
+      if (config.knowledge && config.knowledge.length > 0) {
+        const knowledgeInfo = config.knowledge
+          .map((k) => `- ${k.name} (${k.type}, sync: ${k.sync})`)
+          .join("\n");
+        parts.push(`## Knowledge Sources\n\n${knowledgeInfo}`);
+        log.info("Knowledge sources loaded: %d", config.knowledge.length);
+      }
+    } catch (err) {
+      log.warn({ error: err }, "Failed to load knowledge, continuing");
+    }
+    emitProgress(step, stepIndex, "Knowledge loaded");
+  }
+
+  // 4. load-user-profile (P0 跳过)
+  {
+    const step: BootStep = "load-user-profile";
+    const stepIndex = 3;
+    emitProgress(step, stepIndex, "Loading user profile (skipped in P0)...");
+    log.debug("load-user-profile: skipped in P0");
+    emitProgress(step, stepIndex, "User profile skipped");
+  }
+
+  // 5. load-focus (P0 跳过)
+  {
+    const step: BootStep = "load-focus";
+    const stepIndex = 4;
+    emitProgress(step, stepIndex, "Loading focus (skipped in P0)...");
+    log.debug("load-focus: skipped in P0");
+    emitProgress(step, stepIndex, "Focus skipped");
+  }
+
+  // 6. load-signals (P0 跳过)
+  {
+    const step: BootStep = "load-signals";
+    const stepIndex = 5;
+    emitProgress(step, stepIndex, "Loading signals (skipped in P0)...");
+    log.debug("load-signals: skipped in P0");
+    emitProgress(step, stepIndex, "Signals skipped");
+  }
+
+  // 7. cleanup-expired
+  {
+    const step: BootStep = "cleanup-expired";
+    const stepIndex = 6;
+    emitProgress(step, stepIndex, "Cleaning up expired memory...");
+    try {
+      if (config.agentDir) {
+        const removed = await memoryManager.decay(config.agentDir);
+        if (removed > 0) {
+          log.info("Cleaned up %d expired memory entries", removed);
+        }
+      }
+    } catch (err) {
+      log.warn({ error: err }, "Failed to cleanup expired memory, continuing");
+    }
+    emitProgress(step, stepIndex, "Cleanup done");
+  }
+
+  // 8. ready — 拼装最终 system prompt
+  {
+    const step: BootStep = "ready";
+    const stepIndex = 7;
+    emitProgress(step, stepIndex, "Assembling system prompt...");
+
+    const systemPrompt = parts.join("\n\n---\n\n");
+
+    log.info(
+      "Boot sequence complete, system prompt length: %d chars",
+      systemPrompt.length,
+    );
+    emitProgress(step, stepIndex, "Ready");
+
+    return systemPrompt;
+  }
+}

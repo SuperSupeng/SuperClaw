@@ -24,6 +24,8 @@ export { createConfigWatcher } from "./config/watcher.js";
 export type { ConfigWatcher } from "./config/watcher.js";
 export { createGatewayServer } from "./gateway/server.js";
 export type { GatewayServer } from "./gateway/server.js";
+export { createWebSocketServer } from "./gateway/websocket.js";
+export type { WebSocketServer as DashboardWebSocketServer } from "./gateway/websocket.js";
 export { createBindingTable } from "./router/binding-table.js";
 export type { BindingTable } from "./router/binding-table.js";
 export { createMessageQueue } from "./router/message-queue.js";

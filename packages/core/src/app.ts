@@ -18,6 +18,7 @@ import { createConfigWatcher, type ConfigWatcher } from "./config/watcher.js";
 import type { ConfigDiff } from "./config/diff.js";
 import { createEventBus } from "./event-bus.js";
 import { createGatewayServer, type GatewayServer } from "./gateway/server.js";
+import { createWebSocketServer } from "./gateway/websocket.js";
 import { createBindingTable, type BindingTable } from "./router/binding-table.js";
 import { createMessageQueue, type MessageQueue } from "./router/message-queue.js";
 import { createRouter, type Router } from "./router/router.js";
@@ -242,13 +243,52 @@ export async function createApp(
   });
 
   // 11. Gateway Server
-  const gateway: GatewayServer = createGatewayServer(config.gateway ?? {}, {
+  // 自动定位 dashboard 构建产物：优先用户配置 > 兄弟包 dashboard/dist
+  const gatewayConfig = { ...config.gateway };
+  if (!gatewayConfig.dashboardDir) {
+    try {
+      const coreDir = fileURLToPath(new URL(".", import.meta.url));
+      const defaultDashDir = resolve(coreDir, "../../dashboard/dist");
+      // 仅在目录存在时设置（不阻止启动）
+      const { statSync } = await import("node:fs");
+      if (statSync(defaultDashDir).isDirectory()) {
+        gatewayConfig.dashboardDir = defaultDashDir;
+      }
+    } catch {
+      // dashboard 未构建，静态文件服务不可用
+    }
+  } else {
+    gatewayConfig.dashboardDir = resolve(gatewayConfig.dashboardDir);
+  }
+
+  const gateway: GatewayServer = createGatewayServer(gatewayConfig, {
     eventBus,
     logger,
   });
 
   gateway.setAgentProvider(() => agentManager.getAllAgents());
   gateway.setMessageHandler((msg) => router.handleIncoming(msg));
+
+  // WebSocket server for real-time dashboard events
+  const wsServer = createWebSocketServer(logger);
+  gateway.setWebSocketServer(wsServer);
+  gateway.setSignalProvider(() => signalBus.getAll());
+  gateway.setConfigProvider(() => config);
+
+  // Broadcast EventBus events via WebSocket
+  eventBus.on("agent:status", (d) => wsServer.broadcast("agent:status", d));
+  eventBus.on("agent:ready", (d) => wsServer.broadcast("agent:ready", d));
+  eventBus.on("agent:error", (d) => wsServer.broadcast("agent:error", d));
+  eventBus.on("message:processing", (d) => wsServer.broadcast("message:processing", d));
+  eventBus.on("message:responded", (d) => wsServer.broadcast("message:responded", d));
+  eventBus.on("message:error", (d) => wsServer.broadcast("message:error", d));
+  eventBus.on("signal:created", (d) => wsServer.broadcast("signal:created", d));
+  eventBus.on("signal:consumed", (d) => wsServer.broadcast("signal:consumed", d));
+  eventBus.on("delegation:created", (d) => wsServer.broadcast("delegation:created", d));
+  eventBus.on("delegation:completed", (d) => wsServer.broadcast("delegation:completed", d));
+  eventBus.on("delegation:failed", (d) => wsServer.broadcast("delegation:failed", d));
+  eventBus.on("system:ready", (d) => wsServer.broadcast("system:ready", d));
+  eventBus.on("system:health", (d) => wsServer.broadcast("system:health", d));
 
   // Wire decision engine: listen for Type 1 decisions from agent responses
   eventBus.on("message:responded", ({ agentId, response }) => {
@@ -540,6 +580,7 @@ export async function createApp(
       // Stop autoDream
       autoDream.stop();
 
+      await wsServer.close();
       await gateway.stop();
       router.stop();
 

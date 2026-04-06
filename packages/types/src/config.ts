@@ -36,6 +36,8 @@ export interface GatewayConfig {
   authToken?: string;
   /** 健康检查路径 */
   healthPath?: string;
+  /** Dashboard 静态文件目录 */
+  dashboardDir?: string;
 }
 
 /** Router 配置 */

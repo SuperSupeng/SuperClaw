@@ -174,6 +174,7 @@ const gatewayConfigSchema = z.object({
   mode: z.enum(["development", "production"]).optional(),
   authToken: z.string().optional(),
   healthPath: z.string().optional(),
+  dashboardDir: z.string().optional(),
 });
 
 const routerConfigSchema = z.object({

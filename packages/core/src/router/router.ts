@@ -132,8 +132,11 @@ export function createRouter(deps: RouterDeps): Router {
     async handleIncoming(message: IncomingMessage): Promise<void> {
       eventBus.emit("message:received", { message });
 
-      // 查 binding table
-      const agentId = bindingTable.resolve(message.channelType, message.accountId, message);
+      // 支持 targetAgent 直接路由（Dashboard / API 调用）
+      const targetAgent = message.metadata?.targetAgent as string | undefined;
+
+      // 查 binding table（targetAgent 优先）
+      const agentId = targetAgent ?? bindingTable.resolve(message.channelType, message.accountId, message);
       if (!agentId) {
         logger.warn(
           { channelType: message.channelType, accountId: message.accountId, messageId: message.id },

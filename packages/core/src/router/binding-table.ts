@@ -2,7 +2,7 @@
 // Binding Table — 绑定表（Channel Account → Agent 映射）
 // ============================================================================
 
-import type { BindingConfig, IncomingMessage } from "@superclaw/types";
+import type { BindingConfig, IncomingMessage } from "@superclaw-ai/types";
 
 /** BindingTable 接口 */
 export interface BindingTable {

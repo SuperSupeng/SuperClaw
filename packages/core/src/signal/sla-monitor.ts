@@ -2,7 +2,7 @@
 // SLA Monitor — 信号 SLA 超时监控
 // ============================================================================
 
-import type { EventBus } from "@superclaw/types";
+import type { EventBus } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 import type { SignalBus } from "./signal-bus.js";
 

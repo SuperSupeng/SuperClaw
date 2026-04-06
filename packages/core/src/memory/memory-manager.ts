@@ -4,7 +4,7 @@
 
 import { readFile, appendFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { MemoryManager, MemoryFileType, MemoryEntry } from "@superclaw/types";
+import type { MemoryManager, MemoryFileType, MemoryEntry } from "@superclaw-ai/types";
 import { loadSoul } from "./soul-loader.js";
 import { loadHeartbeat } from "./heartbeat-loader.js";
 import { loadCompanyState } from "./company-state.js";

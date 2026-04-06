@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { z } from "zod";
-import type { SuperClawConfig } from "@superclaw/types";
+import type { SuperClawConfig } from "@superclaw-ai/types";
 
 // ─── 子 Schema ─────────────────────────────────────────────────────────────────
 

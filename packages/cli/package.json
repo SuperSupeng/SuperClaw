@@ -20,10 +20,10 @@
     }
   },
   "dependencies": {
-    "@superclaw/core": "workspace:*",
-    "@superclaw/types": "workspace:*",
-    "@superclaw/channel-discord": "workspace:*",
-    "@superclaw/channel-cli": "workspace:*",
+    "@superclaw-ai/core": "workspace:*",
+    "@superclaw-ai/types": "workspace:*",
+    "@superclaw-ai/channel-discord": "workspace:*",
+    "@superclaw-ai/channel-cli": "workspace:*",
     "cac": "^6.7.14",
     "picocolors": "^1.1.0"
   },

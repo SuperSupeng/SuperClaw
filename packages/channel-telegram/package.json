@@ -1,5 +1,5 @@
 {
-  "name": "@superclaw/channel-telegram",
+  "name": "@superclaw-ai/channel-telegram",
   "version": "0.1.0",
   "description": "Telegram channel adapter for SuperClaw",
   "type": "module",
@@ -27,7 +27,7 @@
   "homepage": "https://github.com/SuperSupeng/SuperClaw",
   "keywords": ["ai", "agent", "multi-agent", "digital-workforce", "superclaw", "telegram"],
   "dependencies": {
-    "@superclaw/types": "workspace:*",
+    "@superclaw-ai/types": "workspace:*",
     "grammy": "^1.35.0"
   }
 }

@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { randomUUID } from "node:crypto";
-import type { EventBus } from "@superclaw/types";
+import type { EventBus } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 import type { OrganizationTree } from "./organization-tree.js";
 import type { AgentManager } from "../agent/agent-manager.js";

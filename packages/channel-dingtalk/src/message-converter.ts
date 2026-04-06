@@ -6,7 +6,7 @@ import type {
   IncomingMessage,
   OutgoingMessage,
   MessageSourceType,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 import type { DingTalkMessageEvent } from "./client-manager.js";
 
 /** 钉钉消息最大字符数（安全值） */

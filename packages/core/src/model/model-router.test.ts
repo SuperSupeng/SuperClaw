@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { createModelRouter, type ModelProvider, type ModelProviderFactory } from "./model-router";
-import type { ModelCallResult, ProviderConfig } from "@superclaw/types";
+import type { ModelCallResult, ProviderConfig } from "@superclaw-ai/types";
 
 const mockLogger = {
   child: () => mockLogger,

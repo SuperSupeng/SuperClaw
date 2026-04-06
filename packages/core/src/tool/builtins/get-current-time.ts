@@ -1,4 +1,4 @@
-import type { ToolDefinition } from "@superclaw/types";
+import type { ToolDefinition } from "@superclaw-ai/types";
 
 export const definition: ToolDefinition = {
   name: "get-current-time",

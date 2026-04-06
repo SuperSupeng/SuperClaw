@@ -5,7 +5,7 @@
 // 事件总线，由 Router 分发给对应 Agent 执行。
 // ============================================================================
 
-import type { AgentConfig, EventBus, IncomingMessage, MemoryManager } from "@superclaw/types";
+import type { AgentConfig, EventBus, IncomingMessage, MemoryManager } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 
 /** HeartbeatExecutor 依赖 */

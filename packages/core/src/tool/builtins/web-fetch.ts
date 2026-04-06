@@ -1,4 +1,4 @@
-import type { ToolDefinition } from "@superclaw/types";
+import type { ToolDefinition } from "@superclaw-ai/types";
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 const MAX_BODY_CHARS = 512_000;

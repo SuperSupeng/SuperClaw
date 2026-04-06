@@ -1,5 +1,5 @@
 {
-  "name": "@superclaw/core",
+  "name": "@superclaw-ai/core",
   "version": "0.1.0",
   "description": "SuperClaw core runtime — Agent loop, model provider, gateway, router, memory",
   "type": "module",
@@ -27,7 +27,7 @@
   "homepage": "https://github.com/SuperSupeng/SuperClaw",
   "keywords": ["ai", "agent", "multi-agent", "digital-workforce", "superclaw"],
   "dependencies": {
-    "@superclaw/types": "workspace:*",
+    "@superclaw-ai/types": "workspace:*",
     "@ai-sdk/openai": "^1.3.0",
     "ai": "^4.3.0",
     "zod": "^3.24.0",

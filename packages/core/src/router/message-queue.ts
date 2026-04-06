@@ -2,7 +2,7 @@
 // Message Queue — 内存消息队列（per-agent + debounce）
 // ============================================================================
 
-import type { IncomingMessage, RouterConfig } from "@superclaw/types";
+import type { IncomingMessage, RouterConfig } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 
 /** MessageQueue 接口 */

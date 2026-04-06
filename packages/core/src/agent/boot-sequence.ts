@@ -7,7 +7,7 @@ import type {
   BootProgress,
   BootStep,
   MemoryManager,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 import type { Logger } from "pino";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";

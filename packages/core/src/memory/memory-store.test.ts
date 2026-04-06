@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { parseMemoryFile, serializeMemoryEntry } from "./memory-store";
-import type { MemoryEntry } from "@superclaw/types";
+import type { MemoryEntry } from "@superclaw-ai/types";
 
 describe("parseMemoryFile", () => {
   it("splits sections by ## headers", () => {

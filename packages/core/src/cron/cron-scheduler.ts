@@ -4,7 +4,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { CronConfig, CronJobConfig, EventBus, IncomingMessage } from "@superclaw/types";
+import type { CronConfig, CronJobConfig, EventBus, IncomingMessage } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 
 /** Cron 依赖 */

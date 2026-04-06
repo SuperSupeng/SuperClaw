@@ -1,5 +1,5 @@
 {
-  "name": "@superclaw/channel-dingtalk",
+  "name": "@superclaw-ai/channel-dingtalk",
   "version": "0.1.0",
   "description": "DingTalk channel adapter for SuperClaw",
   "type": "module",
@@ -27,7 +27,7 @@
   "homepage": "https://github.com/SuperSupeng/SuperClaw",
   "keywords": ["ai", "agent", "multi-agent", "digital-workforce", "superclaw", "dingtalk"],
   "dependencies": {
-    "@superclaw/types": "workspace:*",
+    "@superclaw-ai/types": "workspace:*",
     "dingtalk-stream": "^2.1.5"
   }
 }

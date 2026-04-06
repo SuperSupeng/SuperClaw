@@ -83,7 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Team template (secretary, researcher, writer agents)
 
 **Types**
-- Shared type package (@superclaw/types) covering all six primitives
+- Shared type package (@superclaw-ai/types) covering all six primitives
 - Type definitions for Agent, Model, Tool, Channel, Binding, Signal, Memory, Knowledge, Config, Runtime, Events, Errors, and Package manifest
 
 **Testing**

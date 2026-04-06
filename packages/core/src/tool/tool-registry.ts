@@ -10,8 +10,8 @@ import type {
   ToolDefinition,
   ToolExecutor,
   ToolResult,
-} from "@superclaw/types";
-import { ErrorCodes } from "@superclaw/types";
+} from "@superclaw-ai/types";
+import { ErrorCodes } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 import { createFunctionExecutor } from "./function-executor.js";
 import { createCLIExecutor } from "./cli-executor.js";

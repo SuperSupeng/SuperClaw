@@ -62,12 +62,12 @@ pnpm typecheck
 ```
 SuperClaw/
 ├── packages/
-│   ├── core/              # @superclaw/core — Runtime engine
+│   ├── core/              # @superclaw-ai/core — Runtime engine
 │   ├── cli/               # superclaw — CLI tool
-│   ├── types/             # @superclaw/types — Shared type definitions
-│   ├── channel-cli/       # @superclaw/channel-cli — Terminal adapter
-│   ├── channel-discord/   # @superclaw/channel-discord — Discord adapter
-│   ├── channel-feishu/    # @superclaw/channel-feishu — Feishu (Lark) adapter
+│   ├── types/             # @superclaw-ai/types — Shared type definitions
+│   ├── channel-cli/       # @superclaw-ai/channel-cli — Terminal adapter
+│   ├── channel-discord/   # @superclaw-ai/channel-discord — Discord adapter
+│   ├── channel-feishu/    # @superclaw-ai/channel-feishu — Feishu (Lark) adapter
 │   └── create-superclaw/  # create-superclaw — Project scaffolding
 ├── docs/                  # VitePress documentation site
 ├── examples/
@@ -79,9 +79,9 @@ SuperClaw/
 ### Package Dependency Graph
 
 ```
-@superclaw/types  (pure types, no runtime deps)
+@superclaw-ai/types  (pure types, no runtime deps)
        ↑
-@superclaw/core   (runtime: agent, model, router, memory, signal, tools)
+@superclaw-ai/core   (runtime: agent, model, router, memory, signal, tools)
        ↑
 channel-*         (MessageAdapter implementations)
        ↑
@@ -118,7 +118,7 @@ pnpm dev
 ### Adding a New Channel Adapter
 
 1. Create `packages/channel-<name>/` following the structure of `channel-cli`
-2. Implement the `MessageAdapter` interface from `@superclaw/types`
+2. Implement the `MessageAdapter` interface from `@superclaw-ai/types`
 3. Add the package to `pnpm-workspace.yaml`
 4. Register the channel type in the core config schema
 5. Add tests and documentation

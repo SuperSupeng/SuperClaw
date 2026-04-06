@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createBindingTable } from "./binding-table.js";
-import type { BindingConfig, IncomingMessage } from "@superclaw/types";
+import type { BindingConfig, IncomingMessage } from "@superclaw-ai/types";
 
 function makeMessage(overrides: Partial<IncomingMessage> = {}): IncomingMessage {
   return {

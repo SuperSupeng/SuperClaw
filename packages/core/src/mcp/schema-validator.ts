@@ -9,7 +9,7 @@
 // 5. 单个工具参数数量不能超过 20 个
 // ============================================================================
 
-import type { ToolDefinition } from "@superclaw/types";
+import type { ToolDefinition } from "@superclaw-ai/types";
 
 /** Schema 校验结果 */
 export interface SchemaValidationResult {

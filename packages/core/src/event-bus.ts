@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { EventEmitter } from "node:events";
-import type { EventBus, EventMap, EventName, EventHandler } from "@superclaw/types";
+import type { EventBus, EventMap, EventName, EventHandler } from "@superclaw-ai/types";
 
 /**
  * 创建事件总线实例

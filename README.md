@@ -3,7 +3,7 @@
 **The first open-source framework for building digital organizations, not just agents.**
 
 [![CI](https://github.com/SuperSupeng/SuperClaw/actions/workflows/ci.yml/badge.svg)](https://github.com/SuperSupeng/SuperClaw/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/@superclaw/core.svg)](https://www.npmjs.com/package/@superclaw/core)
+[![npm version](https://img.shields.io/npm/v/@superclaw-ai/core.svg)](https://www.npmjs.com/package/@superclaw-ai/core)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 English | [中文](./README_zh.md)
@@ -96,14 +96,14 @@ Everything in SuperClaw is built from six concepts:
 
 | Package | Description |
 |---------|-------------|
-| `@superclaw/core` | Runtime engine, agent lifecycle, router, signal bus |
-| `@superclaw/cli` | CLI interface (`superclaw dev`, `superclaw start`) |
-| `@superclaw/types` | Shared TypeScript type definitions |
-| `@superclaw/channel-cli` | Terminal channel adapter |
-| `@superclaw/channel-discord` | Discord channel adapter |
-| `@superclaw/channel-feishu` | Feishu (Lark) channel adapter |
-| `@superclaw/channel-dingtalk` | DingTalk channel adapter |
-| `@superclaw/channel-telegram` | Telegram channel adapter |
+| `@superclaw-ai/core` | Runtime engine, agent lifecycle, router, signal bus |
+| `@superclaw-ai/cli` | CLI interface (`superclaw dev`, `superclaw start`) |
+| `@superclaw-ai/types` | Shared TypeScript type definitions |
+| `@superclaw-ai/channel-cli` | Terminal channel adapter |
+| `@superclaw-ai/channel-discord` | Discord channel adapter |
+| `@superclaw-ai/channel-feishu` | Feishu (Lark) channel adapter |
+| `@superclaw-ai/channel-dingtalk` | DingTalk channel adapter |
+| `@superclaw-ai/channel-telegram` | Telegram channel adapter |
 | `create-superclaw` | Project scaffolding tool |
 
 ## Documentation

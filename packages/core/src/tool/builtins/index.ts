@@ -1,4 +1,4 @@
-import type { ToolDefinition } from "@superclaw/types";
+import type { ToolDefinition } from "@superclaw-ai/types";
 import * as getCurrentTime from "./get-current-time.js";
 import * as readFile from "./read-file.js";
 import * as writeFile from "./write-file.js";

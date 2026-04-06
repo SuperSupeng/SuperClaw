@@ -2,7 +2,7 @@
 // Group Handler — 群组策略处理
 // ============================================================================
 
-import type { ChannelAccountConfig } from "@superclaw/types";
+import type { ChannelAccountConfig } from "@superclaw-ai/types";
 import type { FeishuMessageEvent } from "./client-manager.js";
 
 /**

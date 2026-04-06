@@ -7,8 +7,8 @@ import type {
   ModelCallResult,
   ModelConfig,
   ProviderConfig,
-} from "@superclaw/types";
-import { ErrorCodes } from "@superclaw/types";
+} from "@superclaw-ai/types";
+import { ErrorCodes } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 
 /** 模型 Provider 实例接口 */

@@ -8,7 +8,7 @@ import type {
   ModelToolCall,
   ModelToolDefinition,
   ProviderConfig,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 import type { ModelProvider } from "../model-router.js";
 import { generateText } from "ai";
 import { jsonSchema } from "ai";

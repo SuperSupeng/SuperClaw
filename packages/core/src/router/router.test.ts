@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createRouter } from "./router.js";
 import { createEventBus } from "../event-bus.js";
-import type { IncomingMessage, OutgoingMessage, EventBus, AgentRuntime } from "@superclaw/types";
+import type { IncomingMessage, OutgoingMessage, EventBus, AgentRuntime } from "@superclaw-ai/types";
 import type { BindingTable } from "./binding-table.js";
 import type { MessageQueue } from "./message-queue.js";
 import type { AgentManager, RouterDeps } from "./router.js";

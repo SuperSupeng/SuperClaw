@@ -9,7 +9,7 @@ import type {
   MCPServerConfig,
   ToolDefinition,
   ToolResult,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 import type { Logger } from "pino";
 import { spawn } from "node:child_process";
 import type { ChildProcess } from "node:child_process";

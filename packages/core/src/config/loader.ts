@@ -7,7 +7,7 @@ import { readFile } from "node:fs/promises";
 import { resolve, dirname, join } from "node:path";
 import { parse as parseYaml } from "yaml";
 import { validateConfig } from "./schema.js";
-import type { SuperClawConfig } from "@superclaw/types";
+import type { SuperClawConfig } from "@superclaw-ai/types";
 
 /**
  * 加载 .env 文件并设置到 process.env

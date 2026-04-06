@@ -8,7 +8,7 @@ import type {
   OutgoingMessage,
   Attachment,
   MessageSourceType,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 
 /** Discord 消息最大字符数 */
 const DISCORD_MAX_LENGTH = 2000;

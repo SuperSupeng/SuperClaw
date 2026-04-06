@@ -9,7 +9,7 @@ import {
   type DWClientDownStream,
   type RobotMessage,
 } from "dingtalk-stream";
-import type { ChannelAccountConfig } from "@superclaw/types";
+import type { ChannelAccountConfig } from "@superclaw-ai/types";
 
 interface Logger {
   info(msg: string, ...args: unknown[]): void;

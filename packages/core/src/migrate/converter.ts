@@ -2,7 +2,7 @@
 // Converter — OpenClaw → SuperClaw 配置转换
 // ============================================================================
 
-import type { SuperClawConfig } from "@superclaw/types";
+import type { SuperClawConfig } from "@superclaw-ai/types";
 import type { OpenClawConfig, OpenClawAgent } from "./openclaw-parser.js";
 
 /** 转换警告信息 */

@@ -2,7 +2,7 @@
 // Organization Tree — 团队组织结构树
 // ============================================================================
 
-import type { TeamConfig, AgentConfig } from "@superclaw/types";
+import type { TeamConfig, AgentConfig } from "@superclaw-ai/types";
 
 /** 组织树接口 */
 export interface OrganizationTree {

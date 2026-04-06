@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import type { AgentConfig, TeamConfig } from "@superclaw/types";
+import type { AgentConfig, TeamConfig } from "@superclaw-ai/types";
 import { createDelegationManager } from "./delegation.js";
 import { createOrganizationTree } from "./organization-tree.js";
 import { createEventBus } from "../event-bus.js";

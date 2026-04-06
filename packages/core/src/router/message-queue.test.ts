@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createMessageQueue } from "./message-queue.js";
-import type { IncomingMessage, RouterConfig } from "@superclaw/types";
+import type { IncomingMessage, RouterConfig } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 
 function makeMessage(overrides: Partial<IncomingMessage> = {}): IncomingMessage {

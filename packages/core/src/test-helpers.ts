@@ -1,5 +1,5 @@
-import type { SuperClawConfig } from "@superclaw/types";
-import type { IncomingMessage } from "@superclaw/types";
+import type { SuperClawConfig } from "@superclaw-ai/types";
+import type { IncomingMessage } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 import { vi } from "vitest";
 

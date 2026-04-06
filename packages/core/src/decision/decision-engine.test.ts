@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { createDecisionEngine } from "./decision-engine.js";
 import { createEventBus } from "../event-bus.js";
-import type { OutgoingMessage } from "@superclaw/types";
+import type { OutgoingMessage } from "@superclaw-ai/types";
 
 const mockLogger = {
   child: () => mockLogger,

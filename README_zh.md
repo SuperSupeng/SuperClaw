@@ -3,7 +3,7 @@
 **首个开源数字组织构建框架——不只是 Agent，而是整个团队。**
 
 [![CI](https://github.com/SuperSupeng/SuperClaw/actions/workflows/ci.yml/badge.svg)](https://github.com/SuperSupeng/SuperClaw/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/@superclaw/core.svg)](https://www.npmjs.com/package/@superclaw/core)
+[![npm version](https://img.shields.io/npm/v/@superclaw-ai/core.svg)](https://www.npmjs.com/package/@superclaw-ai/core)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 [English](./README.md) | 中文
@@ -96,14 +96,14 @@ SuperClaw 的一切都由六个概念构成：
 
 | 包 | 说明 |
 |-----|------|
-| `@superclaw/core` | 运行时引擎、Agent 生命周期、路由、信号总线 |
-| `@superclaw/cli` | CLI 工具（`superclaw dev`、`superclaw start`） |
-| `@superclaw/types` | 共享 TypeScript 类型定义 |
-| `@superclaw/channel-cli` | 终端渠道适配器 |
-| `@superclaw/channel-discord` | Discord 渠道适配器 |
-| `@superclaw/channel-feishu` | 飞书渠道适配器 |
-| `@superclaw/channel-dingtalk` | 钉钉渠道适配器 |
-| `@superclaw/channel-telegram` | Telegram 渠道适配器 |
+| `@superclaw-ai/core` | 运行时引擎、Agent 生命周期、路由、信号总线 |
+| `@superclaw-ai/cli` | CLI 工具（`superclaw dev`、`superclaw start`） |
+| `@superclaw-ai/types` | 共享 TypeScript 类型定义 |
+| `@superclaw-ai/channel-cli` | 终端渠道适配器 |
+| `@superclaw-ai/channel-discord` | Discord 渠道适配器 |
+| `@superclaw-ai/channel-feishu` | 飞书渠道适配器 |
+| `@superclaw-ai/channel-dingtalk` | 钉钉渠道适配器 |
+| `@superclaw-ai/channel-telegram` | Telegram 渠道适配器 |
 | `create-superclaw` | 项目脚手架工具 |
 
 ## 文档

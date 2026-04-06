@@ -21,11 +21,11 @@ SuperClaw 是一个开源数字员工团队框架。用户通过配置 Agent / T
 ├── turbo.json
 ├── tsconfig.base.json
 ├── packages/
-│   ├── types/                # @superclaw/types — 共享类型（已完成）
-│   ├── core/                 # @superclaw/core — 核心运行时
+│   ├── types/                # @superclaw-ai/types — 共享类型（已完成）
+│   ├── core/                 # @superclaw-ai/core — 核心运行时
 │   ├── cli/                  # superclaw — CLI 工具
-│   ├── channel-discord/      # @superclaw/channel-discord
-│   ├── channel-cli/          # @superclaw/channel-cli
+│   ├── channel-discord/      # @superclaw-ai/channel-discord
+│   ├── channel-cli/          # @superclaw-ai/channel-cli
 │   └── create-superclaw/     # create-superclaw 脚手架
 ├── docs/                     # VitePress 文档站
 ├── examples/                 # 示例项目
@@ -120,12 +120,12 @@ interface EventBus {
 ## 依赖关系图
 
 ```
-@superclaw/types（纯类型，无运行时依赖）
+@superclaw-ai/types（纯类型，无运行时依赖）
        ↑
-@superclaw/core（实现运行时：agent, model, gateway, router, config, memory, tool）
+@superclaw-ai/core（实现运行时：agent, model, gateway, router, config, memory, tool）
        ↑
-@superclaw/channel-discord（实现 MessageAdapter for Discord）
-@superclaw/channel-cli（实现 MessageAdapter for CLI/Terminal）
+@superclaw-ai/channel-discord（实现 MessageAdapter for Discord）
+@superclaw-ai/channel-cli（实现 MessageAdapter for CLI/Terminal）
        ↑
 superclaw（CLI 工具，组装 core + channels，提供命令行界面）
 
@@ -189,7 +189,7 @@ create-superclaw（脚手架，独立包，不依赖其他包）
 
 **导出**：`packages/core/src/index.ts` 导出 `createAgentRuntime`, `createAgentManager`, `createModelRouter`, `createToolRegistry`
 
-**依赖**：`ai`(Vercel AI SDK), `@superclaw/types`, `pino`
+**依赖**：`ai`(Vercel AI SDK), `@superclaw-ai/types`, `pino`
 
 ---
 
@@ -239,7 +239,7 @@ create-superclaw（脚手架，独立包，不依赖其他包）
 
 **导出**：`packages/core/src/index.ts` 导出 `createApp`, `loadConfig`, `createEventBus`, `createRouter`, `createBindingTable`
 
-**依赖**：`zod`, `yaml`, `@superclaw/types`, `pino`
+**依赖**：`zod`, `yaml`, `@superclaw-ai/types`, `pino`
 
 ---
 

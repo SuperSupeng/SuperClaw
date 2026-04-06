@@ -2,7 +2,7 @@
 // Config Diff — 配置变更差异比较
 // ============================================================================
 
-import type { AgentConfig, SuperClawConfig } from "@superclaw/types";
+import type { AgentConfig, SuperClawConfig } from "@superclaw-ai/types";
 
 /** 配置变更差异 */
 export interface ConfigDiff {

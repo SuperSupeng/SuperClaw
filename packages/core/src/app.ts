@@ -11,7 +11,7 @@ import type {
   EventBus,
   MessageAdapter,
   AgentConfig,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 
 import { loadConfig } from "./config/loader.js";
 import { createConfigWatcher, type ConfigWatcher } from "./config/watcher.js";
@@ -57,7 +57,7 @@ async function loadChannelAdapter(
   logger: pino.Logger,
   resolveFrom?: string,
 ): Promise<MessageAdapter | null> {
-  const specifier = `@superclaw/channel-${channelType}`;
+  const specifier = `@superclaw-ai/channel-${channelType}`;
   const factoryName = `create${channelType.charAt(0).toUpperCase()}${channelType.slice(1)}Adapter`;
 
   async function tryImport(mod: Record<string, unknown>): Promise<MessageAdapter | null> {

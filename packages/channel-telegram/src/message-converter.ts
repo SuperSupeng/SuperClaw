@@ -7,7 +7,7 @@ import type {
   IncomingMessage,
   OutgoingMessage,
   MessageSourceType,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 
 /** Telegram 消息最大字符数 */
 const TELEGRAM_MAX_LENGTH = 4096;

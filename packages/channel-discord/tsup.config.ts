@@ -6,5 +6,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   sourcemap: true,
-  external: ["@superclaw/types", "discord.js"],
+  external: ["@superclaw-ai/types", "discord.js"],
 });

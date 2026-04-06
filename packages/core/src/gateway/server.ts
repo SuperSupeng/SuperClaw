@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { createServer, type Server, type IncomingMessage as HttpReq, type ServerResponse } from "node:http";
-import type { GatewayConfig, EventBus, AgentRuntime, IncomingMessage } from "@superclaw/types";
+import type { GatewayConfig, EventBus, AgentRuntime, IncomingMessage } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 
 /** GatewayServer 接口 */

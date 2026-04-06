@@ -1,5 +1,5 @@
 {
-  "name": "@superclaw/types",
+  "name": "@superclaw-ai/types",
   "version": "0.1.0",
   "description": "Shared type definitions for SuperClaw",
   "type": "module",

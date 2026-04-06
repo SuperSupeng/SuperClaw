@@ -14,7 +14,7 @@
 /** 工具配置——联合类型，按 type 区分 */
 export type ToolConfig = FunctionToolConfig | BuiltinToolConfig | MCPToolConfig | CLIToolConfig;
 
-/** 框架内置函数工具（由 @superclaw/core 实现，无需 handler 路径） */
+/** 框架内置函数工具（由 @superclaw-ai/core 实现，无需 handler 路径） */
 export interface BuiltinToolConfig {
   type: "builtin";
   /** 内置工具名，如 get-current-time、read-file */

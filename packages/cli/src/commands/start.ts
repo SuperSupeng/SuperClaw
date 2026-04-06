@@ -3,7 +3,7 @@
 // ============================================================================
 
 import pc from "picocolors";
-import { createApp } from "@superclaw/core";
+import { createApp } from "@superclaw-ai/core";
 
 export async function startCommand(options: { config?: string }): Promise<void> {
   let app: Awaited<ReturnType<typeof createApp>>;

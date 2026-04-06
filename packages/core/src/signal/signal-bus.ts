@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { randomUUID } from "node:crypto";
-import type { EventBus, Signal, SignalPriority } from "@superclaw/types";
+import type { EventBus, Signal, SignalPriority } from "@superclaw-ai/types";
 
 /** 信号总线接口 */
 export interface SignalBus {

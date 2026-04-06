@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import type { ToolDefinition } from "@superclaw/types";
+import type { ToolDefinition } from "@superclaw-ai/types";
 import { resolveSafeWorkspacePath } from "./workspace-path.js";
 
 export const definition: ToolDefinition = {

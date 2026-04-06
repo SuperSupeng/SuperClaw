@@ -2,7 +2,7 @@
 // KnowledgeLoader — 知识源统一加载器
 // ============================================================================
 
-import type { KnowledgeSourceConfig, KnowledgeChunk, KnowledgeProvider } from "@superclaw/types";
+import type { KnowledgeSourceConfig, KnowledgeChunk, KnowledgeProvider } from "@superclaw-ai/types";
 import { createLocalFilesProvider } from "./sources/local-files.js";
 
 /** KnowledgeLoader 接口 */

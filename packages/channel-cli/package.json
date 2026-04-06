@@ -1,5 +1,5 @@
 {
-  "name": "@superclaw/channel-cli",
+  "name": "@superclaw-ai/channel-cli",
   "version": "0.1.0",
   "description": "CLI channel adapter for SuperClaw — interact with agents in the terminal",
   "type": "module",
@@ -19,7 +19,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@superclaw/types": "workspace:*",
+    "@superclaw-ai/types": "workspace:*",
     "@clack/prompts": "^0.10.0"
   },
   "repository": {

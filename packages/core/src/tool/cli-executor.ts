@@ -10,7 +10,7 @@ import type {
   ToolDefinition,
   ToolExecutor,
   ToolResult,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 import type { Logger } from "pino";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";

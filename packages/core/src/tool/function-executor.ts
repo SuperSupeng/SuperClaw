@@ -8,7 +8,7 @@ import type {
   ToolDefinition,
   ToolExecutor,
   ToolResult,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 import type { Logger } from "pino";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";

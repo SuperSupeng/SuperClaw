@@ -2,7 +2,7 @@
 // MemoryStore — MEMORY.md 解析与序列化
 // ============================================================================
 
-import type { MemoryEntry } from "@superclaw/types";
+import type { MemoryEntry } from "@superclaw-ai/types";
 
 /**
  * 解析 MEMORY.md 内容为 MemoryEntry 数组

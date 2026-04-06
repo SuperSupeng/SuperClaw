@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createCronScheduler } from "./cron-scheduler.js";
 import { createEventBus } from "../event-bus.js";
-import type { CronConfig, CronJobConfig } from "@superclaw/types";
+import type { CronConfig, CronJobConfig } from "@superclaw-ai/types";
 
 const mockLogger = {
   child: () => mockLogger,

@@ -62,12 +62,12 @@ pnpm typecheck
 ```
 SuperClaw/
 ├── packages/
-│   ├── core/              # @superclaw/core — 核心运行时引擎
+│   ├── core/              # @superclaw-ai/core — 核心运行时引擎
 │   ├── cli/               # superclaw — 命令行工具
-│   ├── types/             # @superclaw/types — 共享类型定义
-│   ├── channel-cli/       # @superclaw/channel-cli — 终端适配器
-│   ├── channel-discord/   # @superclaw/channel-discord — Discord 适配器
-│   ├── channel-feishu/    # @superclaw/channel-feishu — 飞书适配器
+│   ├── types/             # @superclaw-ai/types — 共享类型定义
+│   ├── channel-cli/       # @superclaw-ai/channel-cli — 终端适配器
+│   ├── channel-discord/   # @superclaw-ai/channel-discord — Discord 适配器
+│   ├── channel-feishu/    # @superclaw-ai/channel-feishu — 飞书适配器
 │   └── create-superclaw/  # create-superclaw — 项目脚手架
 ├── docs/                  # VitePress 文档站
 ├── examples/
@@ -79,9 +79,9 @@ SuperClaw/
 ### 包依赖关系
 
 ```
-@superclaw/types  （纯类型，无运行时依赖）
+@superclaw-ai/types  （纯类型，无运行时依赖）
        ↑
-@superclaw/core   （运行时：agent、model、router、memory、signal、tools）
+@superclaw-ai/core   （运行时：agent、model、router、memory、signal、tools）
        ↑
 channel-*         （MessageAdapter 各渠道实现）
        ↑
@@ -118,7 +118,7 @@ pnpm dev
 ### 添加新的渠道适配器
 
 1. 参照 `channel-cli` 的结构创建 `packages/channel-<name>/`
-2. 实现 `@superclaw/types` 中的 `MessageAdapter` 接口
+2. 实现 `@superclaw-ai/types` 中的 `MessageAdapter` 接口
 3. 将新包添加到 `pnpm-workspace.yaml`
 4. 在核心配置 schema 中注册渠道类型
 5. 编写测试和文档

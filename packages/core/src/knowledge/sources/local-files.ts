@@ -5,7 +5,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import { join, extname } from "node:path";
 import { randomUUID } from "node:crypto";
-import type { KnowledgeProvider, KnowledgeSourceConfig, KnowledgeChunk } from "@superclaw/types";
+import type { KnowledgeProvider, KnowledgeSourceConfig, KnowledgeChunk } from "@superclaw-ai/types";
 
 interface FileEntry {
   path: string;

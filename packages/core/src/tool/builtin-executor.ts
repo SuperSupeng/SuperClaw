@@ -2,7 +2,7 @@
 // Builtin Tool Executor — 框架内置工具（无动态 import）
 // ============================================================================
 
-import type { ToolDefinition, ToolExecutor, ToolResult } from "@superclaw/types";
+import type { ToolDefinition, ToolExecutor, ToolResult } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 import {
   allBuiltinToolNames,

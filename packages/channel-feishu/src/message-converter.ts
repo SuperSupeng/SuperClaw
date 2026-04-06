@@ -6,7 +6,7 @@ import type {
   IncomingMessage,
   OutgoingMessage,
   MessageSourceType,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 import type { FeishuMessageEvent } from "./client-manager.js";
 
 /** 飞书消息最大字符数（实际限制更大，这里设一个安全值） */

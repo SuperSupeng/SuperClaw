@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createOrganizationTree } from "./organization-tree.js";
-import type { AgentConfig, TeamConfig } from "@superclaw/types";
+import type { AgentConfig, TeamConfig } from "@superclaw-ai/types";
 
 function baseAgent(id: string, overrides: Partial<AgentConfig> = {}): AgentConfig {
   return {

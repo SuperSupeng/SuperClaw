@@ -85,7 +85,7 @@ my-agent/
 }
 ```
 
-The `manifest.json` follows the existing `AgentPackageManifest` type from `@superclaw/types/package.ts`.
+The `manifest.json` follows the existing `AgentPackageManifest` type from `@superclaw-ai/types/package.ts`.
 
 ### CLI Integration
 
@@ -175,7 +175,7 @@ DELETE /api/v1/packages/<name>/<version>    # Unpublish (auth required)
 
 ## Compatibility with Existing Types
 
-The `@superclaw/types` package already defines `AgentPackageManifest`:
+The `@superclaw-ai/types` package already defines `AgentPackageManifest`:
 
 ```ts
 // packages/types/src/package.ts

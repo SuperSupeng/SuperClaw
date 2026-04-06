@@ -8,7 +8,7 @@ import type {
   IncomingMessage,
   OutgoingMessage,
   MessageTarget,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 import type * as lark from "@larksuiteoapi/node-sdk";
 import { createClientManager } from "./client-manager.js";
 import { feishuToIncoming, outgoingToFeishu } from "./message-converter.js";

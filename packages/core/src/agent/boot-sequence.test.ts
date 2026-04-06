@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import type { AgentConfig, MemoryManager, BootProgress } from "@superclaw/types";
+import type { AgentConfig, MemoryManager, BootProgress } from "@superclaw-ai/types";
 
 vi.mock("node:fs/promises", () => ({
   readFile: vi.fn(),

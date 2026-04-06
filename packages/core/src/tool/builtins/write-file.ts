@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
-import type { ToolDefinition } from "@superclaw/types";
+import type { ToolDefinition } from "@superclaw-ai/types";
 import { resolveSafeWorkspacePath } from "./workspace-path.js";
 
 export const definition: ToolDefinition = {

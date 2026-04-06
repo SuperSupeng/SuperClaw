@@ -8,7 +8,7 @@ import type {
   EventBus,
   AgentRuntime,
   MessageAdapter,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 import type { Logger } from "pino";
 import type { BindingTable } from "./binding-table.js";
 import type { MessageQueue } from "./message-queue.js";

@@ -1,5 +1,5 @@
 {
-  "name": "@superclaw/channel-feishu",
+  "name": "@superclaw-ai/channel-feishu",
   "version": "0.1.0",
   "description": "Feishu/Lark channel adapter for SuperClaw",
   "type": "module",
@@ -27,7 +27,7 @@
   "homepage": "https://github.com/SuperSupeng/SuperClaw",
   "keywords": ["ai", "agent", "multi-agent", "digital-workforce", "superclaw", "feishu", "lark"],
   "dependencies": {
-    "@superclaw/types": "workspace:*",
+    "@superclaw-ai/types": "workspace:*",
     "@larksuiteoapi/node-sdk": "^1.45.0"
   }
 }

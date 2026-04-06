@@ -5,7 +5,7 @@
 // Type 2 (可逆): Agent 自主执行，不经过引擎
 // ============================================================================
 
-import type { EventBus, OutgoingMessage } from "@superclaw/types";
+import type { EventBus, OutgoingMessage } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 
 /** 决策引擎依赖 */

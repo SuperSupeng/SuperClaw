@@ -1,5 +1,5 @@
 {
-  "name": "@superclaw/channel-discord",
+  "name": "@superclaw-ai/channel-discord",
   "version": "0.1.0",
   "description": "Discord channel adapter for SuperClaw",
   "type": "module",
@@ -19,7 +19,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@superclaw/types": "workspace:*",
+    "@superclaw-ai/types": "workspace:*",
     "discord.js": "^14.18.0"
   },
   "repository": {

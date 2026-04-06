@@ -6,5 +6,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   sourcemap: true,
-  external: ["@superclaw/types", "@larksuiteoapi/node-sdk"],
+  external: ["@superclaw-ai/types", "@larksuiteoapi/node-sdk"],
 });

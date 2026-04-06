@@ -19,7 +19,7 @@ import type {
   MemoryEntry,
   MemoryManager,
   ModelConfig,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 import type { ModelRouter } from "../model/model-router.js";
 import { serializeMemoryEntry } from "./memory-store.js";
 
@@ -223,7 +223,7 @@ export function createAutoDream(deps: AutoDreamDeps): AutoDreamScheduler {
         const result = await consolidateAgent(agentConfig, deps, log);
 
         // Step d: emit event for tracking
-        // NOTE: Add "memory:consolidated" to EventMap in @superclaw/types for
+        // NOTE: Add "memory:consolidated" to EventMap in @superclaw-ai/types for
         // full type safety. Using type assertion for forward compatibility.
         (deps.eventBus.emit as Function)("memory:consolidated", {
           agentId: result.agentId,

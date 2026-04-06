@@ -109,7 +109,7 @@ describe("superclaw init", () => {
 
 describe("config validation", () => {
   it("should validate a minimal valid config", async () => {
-    const { validateConfig } = await import("@superclaw/core");
+    const { validateConfig } = await import("@superclaw-ai/core");
 
     const minimalConfig = {
       version: "0.1.0",
@@ -163,7 +163,7 @@ describe("config validation", () => {
   });
 
   it("should throw on an invalid config (missing required fields)", async () => {
-    const { validateConfig } = await import("@superclaw/core");
+    const { validateConfig } = await import("@superclaw-ai/core");
 
     // Missing providers, agents, channels, bindings
     const invalidConfig = {
@@ -174,7 +174,7 @@ describe("config validation", () => {
   });
 
   it("should throw on config with invalid agent tier", async () => {
-    const { validateConfig } = await import("@superclaw/core");
+    const { validateConfig } = await import("@superclaw-ai/core");
 
     const badConfig = {
       version: "0.1.0",
@@ -218,7 +218,7 @@ describe("createApp smoke test", () => {
   });
 
   it("should return an app object with expected methods (no crash)", async () => {
-    const { createApp } = await import("@superclaw/core");
+    const { createApp } = await import("@superclaw-ai/core");
 
     // Write a minimal superclaw.config.json
     const config = {

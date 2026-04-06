@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { watch, type FSWatcher } from "node:fs";
-import type { EventBus } from "@superclaw/types";
+import type { EventBus } from "@superclaw-ai/types";
 import type { Logger } from "pino";
 import { loadConfig } from "./loader.js";
 import { diffConfig } from "./diff.js";

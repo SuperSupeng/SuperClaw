@@ -8,7 +8,7 @@ import type {
   IncomingMessage,
   OutgoingMessage,
   MessageTarget,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 import { createClientManager } from "./client-manager.js";
 import { discordToIncoming, outgoingToDiscord } from "./message-converter.js";
 import { shouldHandleDM } from "./dm-handler.js";

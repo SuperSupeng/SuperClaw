@@ -3,7 +3,7 @@
 // ============================================================================
 
 import type { Context } from "grammy";
-import type { ChannelAccountConfig } from "@superclaw/types";
+import type { ChannelAccountConfig } from "@superclaw-ai/types";
 
 /**
  * 判断是否应该处理该群组消息

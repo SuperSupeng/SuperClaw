@@ -8,7 +8,7 @@ import type {
   BootProgress,
   EventBus,
   MemoryManager,
-} from "@superclaw/types";
+} from "@superclaw-ai/types";
 import type { Logger } from "pino";
 import type { ModelRouter } from "../model/model-router.js";
 import type { ToolRegistry } from "../tool/tool-registry.js";

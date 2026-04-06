@@ -3,8 +3,8 @@
 // ============================================================================
 
 import pc from "picocolors";
-import { runMigration } from "@superclaw/core";
-import type { MigrateOptions } from "@superclaw/core";
+import { runMigration } from "@superclaw-ai/core";
+import type { MigrateOptions } from "@superclaw-ai/core";
 
 interface MigrateCommandOptions {
   from?: string;

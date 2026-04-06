@@ -6,5 +6,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   sourcemap: true,
-  external: ["@superclaw/types", "dingtalk-stream"],
+  external: ["@superclaw-ai/types", "dingtalk-stream"],
 });

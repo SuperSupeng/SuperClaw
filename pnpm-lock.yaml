@@ -35,13 +35,13 @@ importers:
       '@clack/prompts':
         specifier: ^0.10.0
         version: 0.10.1
-      '@superclaw/types':
+      '@superclaw-ai/types':
         specifier: workspace:*
         version: link:../types
 
   packages/channel-dingtalk:
     dependencies:
-      '@superclaw/types':
+      '@superclaw-ai/types':
         specifier: workspace:*
         version: link:../types
       dingtalk-stream:
@@ -50,7 +50,7 @@ importers:
 
   packages/channel-discord:
     dependencies:
-      '@superclaw/types':
+      '@superclaw-ai/types':
         specifier: workspace:*
         version: link:../types
       discord.js:
@@ -62,13 +62,13 @@ importers:
       '@larksuiteoapi/node-sdk':
         specifier: ^1.45.0
         version: 1.60.0
-      '@superclaw/types':
+      '@superclaw-ai/types':
         specifier: workspace:*
         version: link:../types
 
   packages/channel-telegram:
     dependencies:
-      '@superclaw/types':
+      '@superclaw-ai/types':
         specifier: workspace:*
         version: link:../types
       grammy:
@@ -77,16 +77,16 @@ importers:
 
   packages/cli:
     dependencies:
-      '@superclaw/channel-cli':
+      '@superclaw-ai/channel-cli':
         specifier: workspace:*
         version: link:../channel-cli
-      '@superclaw/channel-discord':
+      '@superclaw-ai/channel-discord':
         specifier: workspace:*
         version: link:../channel-discord
-      '@superclaw/core':
+      '@superclaw-ai/core':
         specifier: workspace:*
         version: link:../core
-      '@superclaw/types':
+      '@superclaw-ai/types':
         specifier: workspace:*
         version: link:../types
       cac:
@@ -101,7 +101,7 @@ importers:
       '@ai-sdk/openai':
         specifier: ^1.3.0
         version: 1.3.24(zod@3.25.76)
-      '@superclaw/types':
+      '@superclaw-ai/types':
         specifier: workspace:*
         version: link:../types
       ai:

@@ -21,6 +21,7 @@ import type {
 import type { Logger } from "pino";
 import type { ModelRouter } from "../model/model-router.js";
 import type { ToolRegistry } from "../tool/tool-registry.js";
+import type { DelegationManager } from "../team/delegation.js";
 import { runBootSequence } from "./boot-sequence.js";
 
 /** Agent 运行时依赖 */
@@ -30,6 +31,8 @@ export interface AgentDeps {
   memoryManager: MemoryManager;
   eventBus: EventBus;
   logger: Logger;
+  /** 可选的委托管理器（executive/coordinator 层级可用） */
+  delegationManager?: DelegationManager;
 }
 
 /** 最大工具调用循环次数 */
@@ -53,8 +56,41 @@ export function createAgentRuntime(
   config: AgentConfig,
   deps: AgentDeps,
 ): AgentRuntime {
-  const { modelRouter, toolRegistry, memoryManager, eventBus, logger } = deps;
+  const { modelRouter, toolRegistry, memoryManager, eventBus, logger, delegationManager } = deps;
   const log = logger.child({ agentId: config.id });
+
+  // 是否为可委托层级（executive / coordinator）
+  const canDelegateRole = config.tier === "executive" || config.tier === "coordinator";
+
+  /** delegate_task 工具定义（仅 executive/coordinator 层级且有 delegationManager 时注入） */
+  const delegateToolDef: ToolDefinition | null =
+    canDelegateRole && delegationManager
+      ? {
+          name: "delegate_task",
+          description:
+            "Delegate a task to another agent. Provide the target agent ID, task description, and a context digest summarizing relevant background (do not outsource understanding).",
+          parameters: {
+            type: "object",
+            properties: {
+              to: {
+                type: "string",
+                description: "Target agent ID to delegate to",
+              },
+              task: {
+                type: "string",
+                description: "Task description for the target agent",
+              },
+              contextDigest: {
+                type: "string",
+                description:
+                  "Context digest — a summary of relevant background so the target agent can work independently",
+              },
+            },
+            required: ["to", "task", "contextDigest"],
+          },
+          source: "function" as const,
+        }
+      : null;
 
   // 对话历史，按 senderId 分隔
   const conversationHistory = new Map<string, HistoryEntry[]>();
@@ -155,7 +191,11 @@ export function createAgentRuntime(
 
       try {
         const toolDefs = toolRegistry.getToolDefinitions();
-        const modelToolDefs = toModelToolDefs(toolDefs);
+        // 注入 delegate_task 工具（如果可用）
+        const allToolDefs = delegateToolDef
+          ? [...toolDefs, delegateToolDef]
+          : toolDefs;
+        const modelToolDefs = toModelToolDefs(allToolDefs);
 
         // 追加用户消息到历史
         appendHistory(message.senderId, {
@@ -210,14 +250,34 @@ export function createAgentRuntime(
           for (const toolCall of result.toolCalls) {
             log.debug({ tool: toolCall.name, args: toolCall.arguments }, "Executing tool call");
             try {
-              const toolResult = await toolRegistry.execute(toolCall.name, toolCall.arguments);
-              currentHistory.push({
-                role: "tool",
-                content: toolResult.success
-                  ? toolResult.output
-                  : `Error: ${toolResult.error || "Unknown error"}`,
-                toolCallId: toolCall.id,
-              });
+              // 特殊处理 delegate_task 工具
+              if (toolCall.name === "delegate_task" && delegationManager) {
+                const args = toolCall.arguments as {
+                  to: string;
+                  task: string;
+                  contextDigest: string;
+                };
+                const delegationTask = await delegationManager.delegate(
+                  config.id,
+                  args.to,
+                  args.task,
+                  args.contextDigest,
+                );
+                currentHistory.push({
+                  role: "tool",
+                  content: `Task delegated successfully. Task ID: ${delegationTask.id}, Status: ${delegationTask.status}`,
+                  toolCallId: toolCall.id,
+                });
+              } else {
+                const toolResult = await toolRegistry.execute(toolCall.name, toolCall.arguments);
+                currentHistory.push({
+                  role: "tool",
+                  content: toolResult.success
+                    ? toolResult.output
+                    : `Error: ${toolResult.error || "Unknown error"}`,
+                  toolCallId: toolCall.id,
+                });
+              }
             } catch (err) {
               const errMsg = err instanceof Error ? err.message : String(err);
               log.error({ tool: toolCall.name, error: errMsg }, "Tool execution failed");

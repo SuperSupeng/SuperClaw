@@ -56,6 +56,24 @@ export interface EventMap {
   "system:shutdown": { reason: string };
   /** 健康检查 */
   "system:health": { status: "healthy" | "degraded" | "unhealthy" };
+
+  // ─── Delegation ────────────────────────────────────────
+  /** 委托任务创建 */
+  "delegation:created": { taskId: string; from: string; to: string };
+  /** 委托任务完成 */
+  "delegation:completed": { taskId: string; from: string; to: string; result?: string };
+  /** 委托任务失败 */
+  "delegation:failed": { taskId: string; from: string; to: string; error: string };
+
+  // ─── Cron ──────────────────────────────────────────────
+  /** Cron 任务触发 */
+  "cron:fired": { jobId: string; agentId: string };
+
+  // ─── Decision ──────────────────────────────────────────
+  /** 决策等待审批 */
+  "decision:pending": { decisionId: string; agentId: string; description: string };
+  /** 决策已解决 */
+  "decision:resolved": { decisionId: string; agentId: string; approved: boolean; reason?: string };
 }
 
 /** 事件名称类型 */

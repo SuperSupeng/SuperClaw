@@ -46,5 +46,19 @@ pnpm dev
 
 SuperClaw is built by contributors from around the world. We welcome participation in any language.
 
+### Start Contributing
+
+Pick a [Good First Issue](https://github.com/SuperSupeng/SuperClaw/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) and dive in! Here are some popular areas:
+
+| Area | Examples | Difficulty |
+|------|----------|------------|
+| Channel Adapters | [Slack #1](https://github.com/SuperSupeng/SuperClaw/issues/1), [WeChat Work #2](https://github.com/SuperSupeng/SuperClaw/issues/2) | Medium |
+| Testing | [DingTalk Tests #4](https://github.com/SuperSupeng/SuperClaw/issues/4), [Telegram Tests #5](https://github.com/SuperSupeng/SuperClaw/issues/5) | Easy |
+| CLI Tools | [Doctor #6](https://github.com/SuperSupeng/SuperClaw/issues/6), [Validate #13](https://github.com/SuperSupeng/SuperClaw/issues/13), [Dry-run #11](https://github.com/SuperSupeng/SuperClaw/issues/11) | Easy |
+| Core | [JSON Schema #3](https://github.com/SuperSupeng/SuperClaw/issues/3), [Error Messages #8](https://github.com/SuperSupeng/SuperClaw/issues/8) | Easy |
+| Docs & Examples | [Customer Support Example #10](https://github.com/SuperSupeng/SuperClaw/issues/10) | Easy |
+
+### Guides
+
 - [Contributing Guide (English)](https://github.com/SuperSupeng/SuperClaw/blob/main/CONTRIBUTING.md)
 - [贡献指南 (中文)](https://github.com/SuperSupeng/SuperClaw/blob/main/CONTRIBUTING_zh.md)

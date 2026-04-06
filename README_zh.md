@@ -115,7 +115,15 @@ SuperClaw 的一切都由六个概念构成：
 
 ## 参与贡献
 
-请查看 [贡献指南](./CONTRIBUTING_zh.md) 了解开发环境搭建和贡献规范。
+欢迎全球开发者参与共建！
+
+[![Good First Issues](https://img.shields.io/github/issues/SuperSupeng/SuperClaw/good%20first%20issue?color=7057ff&label=good%20first%20issues)](https://github.com/SuperSupeng/SuperClaw/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+[![Help Wanted](https://img.shields.io/github/issues/SuperSupeng/SuperClaw/help%20wanted?color=008672&label=help%20wanted)](https://github.com/SuperSupeng/SuperClaw/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+
+- **新手入门？** 查看 [Good First Issues](https://github.com/SuperSupeng/SuperClaw/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) — 我们准备了覆盖渠道适配器、CLI、核心、文档、测试等方向的新手友好任务。
+- **想做渠道适配器？** Slack、企业微信等等待认领。见 [#1](https://github.com/SuperSupeng/SuperClaw/issues/1)、[#2](https://github.com/SuperSupeng/SuperClaw/issues/2)。
+- **更擅长写测试？** 钉钉和 Telegram 适配器需要测试覆盖。见 [#4](https://github.com/SuperSupeng/SuperClaw/issues/4)、[#5](https://github.com/SuperSupeng/SuperClaw/issues/5)。
+- **完整指南：** [CONTRIBUTING.md (English)](./CONTRIBUTING.md) | [贡献指南 (中文)](./CONTRIBUTING_zh.md)
 
 ## 许可证
 

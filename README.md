@@ -113,11 +113,17 @@ Everything in SuperClaw is built from six concepts:
 - [Configuration Reference](https://superclaw.dev/guide/configuration)
 - [CLI Tools Integration](https://superclaw.dev/guide/cli-tools)
 
-## Contributing
+## Get Involved
 
-We welcome contributions from developers worldwide! See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and guidelines.
+We welcome contributions from developers worldwide!
 
-[贡献指南 (中文)](./CONTRIBUTING_zh.md)
+[![Good First Issues](https://img.shields.io/github/issues/SuperSupeng/SuperClaw/good%20first%20issue?color=7057ff&label=good%20first%20issues)](https://github.com/SuperSupeng/SuperClaw/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+[![Help Wanted](https://img.shields.io/github/issues/SuperSupeng/SuperClaw/help%20wanted?color=008672&label=help%20wanted)](https://github.com/SuperSupeng/SuperClaw/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+
+- **New here?** Check out our [Good First Issues](https://github.com/SuperSupeng/SuperClaw/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) -- we've prepared beginner-friendly tasks across channels, CLI, core, docs, and testing.
+- **Want to build a channel adapter?** Slack, WeChat Work, and more are up for grabs. See [#1](https://github.com/SuperSupeng/SuperClaw/issues/1), [#2](https://github.com/SuperSupeng/SuperClaw/issues/2).
+- **Prefer writing tests?** DingTalk and Telegram adapters need test coverage. See [#4](https://github.com/SuperSupeng/SuperClaw/issues/4), [#5](https://github.com/SuperSupeng/SuperClaw/issues/5).
+- **Read the full guide:** [CONTRIBUTING.md](./CONTRIBUTING.md) | [贡献指南 (中文)](./CONTRIBUTING_zh.md)
 
 ## License
 

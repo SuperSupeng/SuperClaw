@@ -21,10 +21,17 @@ export default defineConfig({
           ],
         },
         {
+          text: "Architecture",
+          items: [
+            { text: "Design Principles", link: "/guide/design-principles" },
+          ],
+        },
+        {
           text: "Configuration",
           items: [
             { text: "Configuration Reference", link: "/guide/configuration" },
             { text: "CLI Tools", link: "/guide/cli-tools" },
+            { text: "Migration from OpenClaw", link: "/guide/migration" },
           ],
         },
         {
@@ -41,12 +48,12 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/nicepkg/superclaw" },
+      { icon: "github", link: "https://github.com/SuperSupeng/SuperClaw" },
     ],
 
     footer: {
-      message: "Released under the MIT License.",
-      copyright: "Copyright 2024-present SuperClaw Contributors",
+      message: "Released under the Apache 2.0 License.",
+      copyright: "Copyright 2024-2026 SuperClaw Contributors",
     },
 
     search: {

@@ -11,7 +11,7 @@ hero:
       link: /guide/getting-started
     - theme: alt
       text: View on GitHub
-      link: https://github.com/nicepkg/superclaw
+      link: https://github.com/SuperSupeng/SuperClaw
 
 features:
   - icon: 🧩

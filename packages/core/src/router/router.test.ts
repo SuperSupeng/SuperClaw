@@ -38,6 +38,7 @@ function makeDeps(overrides: Partial<RouterDeps> = {}): RouterDeps {
 
   const bindingTable: BindingTable = {
     resolve: vi.fn().mockReturnValue("agent-a"),
+    resolveAll: vi.fn().mockReturnValue(["agent-a"]),
   };
 
   const messageQueue: MessageQueue = {
@@ -96,6 +97,7 @@ describe("Router", () => {
   it("handles unmatched binding gracefully (no crash, no enqueue)", async () => {
     const bindingTable: BindingTable = {
       resolve: vi.fn().mockReturnValue(null),
+      resolveAll: vi.fn().mockReturnValue([]),
     };
     const deps = makeDeps({ bindingTable });
     const router = createRouter(deps);

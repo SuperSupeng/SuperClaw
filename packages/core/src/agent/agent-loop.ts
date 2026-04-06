@@ -22,6 +22,8 @@ import type { Logger } from "pino";
 import type { ModelRouter } from "../model/model-router.js";
 import type { ToolRegistry } from "../tool/tool-registry.js";
 import type { DelegationManager } from "../team/delegation.js";
+import type { SignalBus } from "../signal/signal-bus.js";
+import type { TeamContextStore } from "../memory/team-context.js";
 import { runBootSequence } from "./boot-sequence.js";
 
 /** Agent 运行时依赖 */
@@ -33,6 +35,10 @@ export interface AgentDeps {
   logger: Logger;
   /** 可选的委托管理器（executive/coordinator 层级可用） */
   delegationManager?: DelegationManager;
+  /** 可选的信号总线 */
+  signalBus?: SignalBus;
+  /** 可选的团队共享上下文 */
+  teamContext?: TeamContextStore;
 }
 
 /** 最大工具调用循环次数 */
@@ -56,7 +62,7 @@ export function createAgentRuntime(
   config: AgentConfig,
   deps: AgentDeps,
 ): AgentRuntime {
-  const { modelRouter, toolRegistry, memoryManager, eventBus, logger, delegationManager } = deps;
+  const { modelRouter, toolRegistry, memoryManager, eventBus, logger, delegationManager, signalBus, teamContext } = deps;
   const log = logger.child({ agentId: config.id });
 
   // 是否为可委托层级（executive / coordinator）
@@ -91,6 +97,45 @@ export function createAgentRuntime(
           source: "function" as const,
         }
       : null;
+
+  /** check_signals 工具定义（所有 agent 可用，需 signalBus） */
+  const checkSignalsToolDef: ToolDefinition | null = signalBus
+    ? {
+        name: "check_signals",
+        description:
+          "Check for pending signals (delegation requests, results, etc.)",
+        parameters: {
+          type: "object",
+          properties: {},
+          required: [],
+        },
+        source: "function" as const,
+      }
+    : null;
+
+  /** complete_delegation 工具定义（所有 agent 可用，需 delegationManager） */
+  const completeDelegationToolDef: ToolDefinition | null = delegationManager
+    ? {
+        name: "complete_delegation",
+        description:
+          "Mark a delegated task as completed with a result summary",
+        parameters: {
+          type: "object",
+          properties: {
+            taskId: {
+              type: "string",
+              description: "The delegation task ID",
+            },
+            result: {
+              type: "string",
+              description: "Result summary of the completed work",
+            },
+          },
+          required: ["taskId", "result"],
+        },
+        source: "function" as const,
+      }
+    : null;
 
   // 对话历史，按 senderId 分隔
   const conversationHistory = new Map<string, HistoryEntry[]>();
@@ -158,7 +203,7 @@ export function createAgentRuntime(
       try {
         systemPrompt = await runBootSequence(
           config,
-          { memoryManager, logger: log },
+          { memoryManager, logger: log, signalBus },
           onProgress,
         );
         await toolRegistry.initialize();
@@ -191,11 +236,48 @@ export function createAgentRuntime(
 
       try {
         const toolDefs = toolRegistry.getToolDefinitions();
-        // 注入 delegate_task 工具（如果可用）
-        const allToolDefs = delegateToolDef
-          ? [...toolDefs, delegateToolDef]
-          : toolDefs;
+        // 注入内置工具（delegate_task, check_signals, complete_delegation）
+        const allToolDefs = [
+          ...toolDefs,
+          ...(delegateToolDef ? [delegateToolDef] : []),
+          ...(checkSignalsToolDef ? [checkSignalsToolDef] : []),
+          ...(completeDelegationToolDef ? [completeDelegationToolDef] : []),
+        ];
         const modelToolDefs = toModelToolDefs(allToolDefs);
+
+        // 构建动态上下文（pending signals + team activity）
+        let dynamicContext = "";
+        if (signalBus) {
+          const pending = signalBus.getPending(config.id);
+          if (pending.length > 0) {
+            dynamicContext +=
+              `\n\n## Pending Signals (${pending.length})\n\n` +
+              pending
+                .map(
+                  (s) =>
+                    `- [${s.type}] from ${s.from} (priority: ${s.priority}): ${JSON.stringify(s.payload)}`,
+                )
+                .join("\n") +
+              "\n\nYou should process these signals. Use check_signals to consume them, then act accordingly. For delegation-request signals, perform the task and use complete_delegation to report results.\n";
+          }
+        }
+        if (teamContext && config.team) {
+          const recentTeamActivity = teamContext
+            .getRecent(config.team, 5)
+            .filter((e) => e.agentId !== config.id)
+            .map(
+              (e) =>
+                `- ${e.agentName}: ${e.summary} (${e.timestamp.toISOString()})`,
+            )
+            .join("\n");
+          if (recentTeamActivity) {
+            dynamicContext += `\n\n## Recent Team Activity\n\n${recentTeamActivity}\n`;
+          }
+        }
+
+        const effectiveSystemPrompt = dynamicContext
+          ? systemPrompt + dynamicContext
+          : systemPrompt;
 
         // 追加用户消息到历史
         appendHistory(message.senderId, {
@@ -204,7 +286,7 @@ export function createAgentRuntime(
         });
 
         const callOptions: ModelCallOptions = {
-          systemPrompt,
+          systemPrompt: effectiveSystemPrompt,
           tools: modelToolDefs.length > 0 ? modelToolDefs : undefined,
           maxTokens: 4096,
           temperature: 0.7,
@@ -250,7 +332,7 @@ export function createAgentRuntime(
           for (const toolCall of result.toolCalls) {
             log.debug({ tool: toolCall.name, args: toolCall.arguments }, "Executing tool call");
             try {
-              // 特殊处理 delegate_task 工具
+              // 特殊处理内置工具
               if (toolCall.name === "delegate_task" && delegationManager) {
                 const args = toolCall.arguments as {
                   to: string;
@@ -266,6 +348,33 @@ export function createAgentRuntime(
                 currentHistory.push({
                   role: "tool",
                   content: `Task delegated successfully. Task ID: ${delegationTask.id}, Status: ${delegationTask.status}`,
+                  toolCallId: toolCall.id,
+                });
+              } else if (toolCall.name === "check_signals" && signalBus) {
+                const consumed = signalBus.consume(config.id);
+                const content =
+                  consumed.length > 0
+                    ? consumed
+                        .map(
+                          (s) =>
+                            `[${s.type}] from ${s.from} (priority: ${s.priority}): ${JSON.stringify(s.payload)}`,
+                        )
+                        .join("\n\n")
+                    : "No pending signals.";
+                currentHistory.push({
+                  role: "tool",
+                  content,
+                  toolCallId: toolCall.id,
+                });
+              } else if (toolCall.name === "complete_delegation" && delegationManager) {
+                const args = toolCall.arguments as {
+                  taskId: string;
+                  result: string;
+                };
+                delegationManager.completeTask(args.taskId, args.result);
+                currentHistory.push({
+                  role: "tool",
+                  content: `Delegation task ${args.taskId} marked as completed.`,
                   toolCallId: toolCall.id,
                 });
               } else {
@@ -295,6 +404,16 @@ export function createAgentRuntime(
           role: "assistant",
           content: result!.text,
         });
+
+        // 记录到团队共享上下文
+        if (teamContext && config.team) {
+          teamContext.append(config.team, {
+            agentId: config.id,
+            agentName: config.name,
+            summary: `Handled message from ${message.senderId}: "${message.content.slice(0, 100)}..." → responded with: "${result!.text.slice(0, 200)}..."`,
+            timestamp: new Date(),
+          });
+        }
 
         const response: OutgoingMessage = {
           content: result!.text,

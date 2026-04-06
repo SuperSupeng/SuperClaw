@@ -43,6 +43,8 @@ export { createHeartbeatExecutor } from "./memory/heartbeat-executor.js";
 export type { HeartbeatExecutor, HeartbeatDeps } from "./memory/heartbeat-executor.js";
 export { createKnowledgeLoader } from "./knowledge/knowledge-loader.js";
 export { createSignalBus } from "./signal/signal-bus.js";
+export { createTeamContextStore } from "./memory/team-context.js";
+export type { TeamContextStore, TeamContextEntry } from "./memory/team-context.js";
 
 // Team + Delegation
 export { createOrganizationTree } from "./team/organization-tree.js";

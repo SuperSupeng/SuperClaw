@@ -11,6 +11,12 @@ export interface BindingTable {
    * @returns 匹配的 agentId，无匹配返回 null
    */
   resolve(channelType: string, accountId: string, message: IncomingMessage): string | null;
+
+  /**
+   * 返回所有匹配的 agentId（按 priority 降序，去重）
+   * 用于群聊广播场景
+   */
+  resolveAll(channelType: string, accountId: string, message: IncomingMessage): string[];
 }
 
 /**
@@ -81,6 +87,65 @@ export function createBindingTable(bindings: BindingConfig[]): BindingTable {
       }
 
       return bestMatch?.agent ?? null;
+    },
+
+    resolveAll(channelType: string, accountId: string, message: IncomingMessage): string[] {
+      const matches: Array<{ agent: string; priority: number }> = [];
+
+      for (const binding of bindings) {
+        // 1. 精确匹配 channel + account
+        if (binding.channel !== channelType || binding.account !== accountId) {
+          continue;
+        }
+
+        // 2. 应用 filter
+        if (binding.filter) {
+          const f = binding.filter;
+
+          if (f.sourceTypes && f.sourceTypes.length > 0) {
+            if (!f.sourceTypes.includes(message.sourceType as "dm" | "group" | "channel")) {
+              continue;
+            }
+          }
+
+          if (f.groupIds && f.groupIds.length > 0) {
+            if (!message.groupId || !f.groupIds.includes(message.groupId)) {
+              continue;
+            }
+          }
+
+          if (f.senderIds && f.senderIds.length > 0) {
+            if (!f.senderIds.includes(message.senderId)) {
+              continue;
+            }
+          }
+
+          if (f.contentPattern) {
+            try {
+              const regex = new RegExp(f.contentPattern);
+              if (!regex.test(message.content)) {
+                continue;
+              }
+            } catch {
+              continue;
+            }
+          }
+        }
+
+        matches.push({ agent: binding.agent, priority: binding.priority ?? 0 });
+      }
+
+      // 按 priority 降序排序，去重
+      matches.sort((a, b) => b.priority - a.priority);
+      const seen = new Set<string>();
+      const result: string[] = [];
+      for (const m of matches) {
+        if (!seen.has(m.agent)) {
+          seen.add(m.agent);
+          result.push(m.agent);
+        }
+      }
+      return result;
     },
   };
 }

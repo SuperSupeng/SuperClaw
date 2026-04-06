@@ -28,10 +28,13 @@ import { createToolRegistry, type ToolRegistry, type ToolRegistryOptions } from 
 import { createMCPClientManager, type MCPClientManager } from "./mcp/mcp-client.js";
 import { createMemoryManager } from "./memory/memory-manager.js";
 import { createAgentManager, type AgentManager } from "./agent/agent-manager.js";
+import { randomUUID } from "node:crypto";
+import type { IncomingMessage } from "@superclaw-ai/types";
 import { createSignalBus } from "./signal/signal-bus.js";
 import { createSLAMonitor } from "./signal/sla-monitor.js";
 import { createOrganizationTree } from "./team/organization-tree.js";
 import { createDelegationManager, type DelegationManager } from "./team/delegation.js";
+import { createTeamContextStore } from "./memory/team-context.js";
 import { createCronScheduler, type CronScheduler } from "./cron/cron-scheduler.js";
 import { createLaneManager } from "./lane/lane-manager.js";
 
@@ -174,6 +177,9 @@ export async function createApp(
     );
   }
 
+  // 7.5 Team Context Store
+  const teamContextStore = createTeamContextStore();
+
   // 8. Agent Manager
   const agentManager: AgentManager = createAgentManager(config.agents, {
     modelRouter,
@@ -182,6 +188,8 @@ export async function createApp(
     eventBus,
     logger,
     delegationManager,
+    signalBus,
+    teamContext: teamContextStore,
   });
 
   // 完成延迟绑定
@@ -240,6 +248,34 @@ export async function createApp(
     channelAdapters,
     eventBus,
     logger,
+    agentConfigs: config.agents.map(a => ({ id: a.id, name: a.name })),
+  });
+
+  // 10.5 Signal-to-message bridge: auto-deliver delegation signals as messages
+  eventBus.on("signal:created", ({ signal }) => {
+    if (signal.type === "delegation-request") {
+      for (const targetId of signal.to) {
+        const payload = signal.payload as {
+          taskId: string;
+          task: string;
+          contextDigest: string;
+        };
+        const syntheticMessage: IncomingMessage = {
+          id: randomUUID(),
+          channelType: "signal",
+          accountId: "system",
+          sourceType: "signal",
+          senderId: signal.from,
+          senderName: signal.from,
+          content: `[Delegation Request - Task ${payload.taskId}]\n\nTask: ${payload.task}\n\nContext: ${payload.contextDigest}\n\nPlease complete this task and use complete_delegation tool with taskId "${payload.taskId}" to report results.`,
+          timestamp: new Date(),
+          metadata: { signalId: signal.id, taskId: payload.taskId, targetAgent: targetId },
+        };
+        router.handleIncoming(syntheticMessage).catch((err) => {
+          logger.error({ err, targetId }, "Failed to deliver delegation signal as message");
+        });
+      }
+    }
   });
 
   // 11. Gateway Server
@@ -352,6 +388,8 @@ export async function createApp(
         eventBus,
         logger,
         delegationManager,
+        signalBus,
+        teamContext: teamContextStore,
       });
       // 关闭旧 Agent，启动新 Agent
       await agentManager.shutdownAll();
@@ -403,6 +441,8 @@ export async function createApp(
         eventBus,
         logger,
         delegationManager,
+        signalBus,
+        teamContext: teamContextStore,
       });
       await agentManager.shutdownAll();
       Object.assign(agentManager, newAgentManager);

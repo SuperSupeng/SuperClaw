@@ -13,6 +13,8 @@ import type { Logger } from "pino";
 import type { ModelRouter } from "../model/model-router.js";
 import type { ToolRegistry } from "../tool/tool-registry.js";
 import type { DelegationManager } from "../team/delegation.js";
+import type { SignalBus } from "../signal/signal-bus.js";
+import type { TeamContextStore } from "../memory/team-context.js";
 import { createAgentRuntime } from "./agent-loop.js";
 import type { AgentDeps } from "./agent-loop.js";
 
@@ -25,6 +27,10 @@ export interface AgentManagerDeps {
   logger: Logger;
   /** 可选的委托管理器 */
   delegationManager?: DelegationManager;
+  /** 可选的信号总线 */
+  signalBus?: SignalBus;
+  /** 可选的团队共享上下文 */
+  teamContext?: TeamContextStore;
 }
 
 /** Agent Manager 接口 */
@@ -53,7 +59,7 @@ export function createAgentManager(
   agents: AgentConfig[],
   deps: AgentManagerDeps,
 ): AgentManager {
-  const { modelRouter, toolRegistryFactory, memoryManager, eventBus, logger, delegationManager } = deps;
+  const { modelRouter, toolRegistryFactory, memoryManager, eventBus, logger, delegationManager, signalBus, teamContext } = deps;
   const log = logger.child({ module: "agent-manager" });
 
   const runtimeMap = new Map<string, AgentRuntime>();
@@ -74,6 +80,8 @@ export function createAgentManager(
           eventBus,
           logger: logger.child({ agentId: agentConfig.id }),
           delegationManager,
+          signalBus,
+          teamContext,
         };
         const runtime = createAgentRuntime(agentConfig, agentDeps);
         runtimeMap.set(agentConfig.id, runtime);

@@ -27,6 +27,8 @@ export interface RouterDeps {
   channelAdapters: Map<string, MessageAdapter>;
   eventBus: EventBus;
   logger: Logger;
+  /** Agent config map for @mention resolution */
+  agentConfigs?: Array<{ id: string; name: string }>;
 }
 
 /** Router 接口 */
@@ -34,6 +36,25 @@ export interface Router {
   handleIncoming(message: IncomingMessage): Promise<void>;
   start(): void;
   stop(): void;
+}
+
+/**
+ * 解析消息中的 @mention，返回匹配的 agentId 列表（去重）
+ */
+function parseMentions(content: string, agentConfigs: Array<{ id: string; name: string }>): string[] {
+  const mentioned: string[] = [];
+  for (const agent of agentConfigs) {
+    // Match @agent-name (case-insensitive, word boundary)
+    const pattern = new RegExp(`@${agent.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+    if (pattern.test(content)) {
+      mentioned.push(agent.id);
+    }
+    // Also match @agent-id
+    if (content.includes(`@${agent.id}`)) {
+      mentioned.push(agent.id);
+    }
+  }
+  return [...new Set(mentioned)];
 }
 
 /**
@@ -47,7 +68,7 @@ export interface Router {
  * 5. emit "message:sent" / "message:error"
  */
 export function createRouter(deps: RouterDeps): Router {
-  const { bindingTable, messageQueue, agentManager, channelAdapters, eventBus, logger } = deps;
+  const { bindingTable, messageQueue, agentManager, channelAdapters, eventBus, logger, agentConfigs } = deps;
 
   let running = false;
   let consumeTimer: ReturnType<typeof setInterval> | null = null;
@@ -68,7 +89,15 @@ export function createRouter(deps: RouterDeps): Router {
     }
 
     try {
-      const response: OutgoingMessage = await agent.handleMessage(message);
+      let response: OutgoingMessage = await agent.handleMessage(message);
+
+      // 群聊消息：前缀 agent 名称，便于区分发言者
+      if (message.groupId && message.sourceType === "group") {
+        response = {
+          ...response,
+          content: `[${agent.config.name}] ${response.content}`,
+        };
+      }
 
       eventBus.emit("message:responded", {
         messageId: message.id,
@@ -132,11 +161,45 @@ export function createRouter(deps: RouterDeps): Router {
     async handleIncoming(message: IncomingMessage): Promise<void> {
       eventBus.emit("message:received", { message });
 
-      // 支持 targetAgent 直接路由（Dashboard / API 调用）
+      // 1. 支持 targetAgent 直接路由（Dashboard / API 调用）
       const targetAgent = message.metadata?.targetAgent as string | undefined;
+      if (targetAgent) {
+        eventBus.emit("message:routed", { message, agentId: targetAgent });
+        messageQueue.enqueue(targetAgent, message);
+        return;
+      }
 
-      // 查 binding table（targetAgent 优先）
-      const agentId = targetAgent ?? bindingTable.resolve(message.channelType, message.accountId, message);
+      // 2. 解析 @mention → 路由到被提及的 agent
+      if (agentConfigs && agentConfigs.length > 0) {
+        const mentionedIds = parseMentions(message.content, agentConfigs);
+        if (mentionedIds.length > 0) {
+          for (const agentId of mentionedIds) {
+            eventBus.emit("message:routed", { message, agentId });
+            messageQueue.enqueue(agentId, message);
+          }
+          return;
+        }
+      }
+
+      // 3. 群聊广播：路由到所有匹配的 agent
+      if (message.sourceType === "group") {
+        const agentIds = bindingTable.resolveAll(message.channelType, message.accountId, message);
+        if (agentIds.length === 0) {
+          logger.warn(
+            { channelType: message.channelType, accountId: message.accountId, messageId: message.id },
+            "No binding found for group message",
+          );
+          return;
+        }
+        for (const agentId of agentIds) {
+          eventBus.emit("message:routed", { message, agentId });
+          messageQueue.enqueue(agentId, message);
+        }
+        return;
+      }
+
+      // 4. DM / webhook → 单 agent 路由（保持原有行为）
+      const agentId = bindingTable.resolve(message.channelType, message.accountId, message);
       if (!agentId) {
         logger.warn(
           { channelType: message.channelType, accountId: message.accountId, messageId: message.id },
@@ -146,8 +209,6 @@ export function createRouter(deps: RouterDeps): Router {
       }
 
       eventBus.emit("message:routed", { message, agentId });
-
-      // 入队
       messageQueue.enqueue(agentId, message);
     },
 

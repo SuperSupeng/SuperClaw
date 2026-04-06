@@ -9,6 +9,7 @@ import type {
   MemoryManager,
 } from "@superclaw-ai/types";
 import type { Logger } from "pino";
+import type { SignalBus } from "../signal/signal-bus.js";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -16,8 +17,8 @@ import { join } from "node:path";
 export interface BootDeps {
   memoryManager: MemoryManager;
   logger: Logger;
-  /** 可选：来自信号总线的待处理信号（step 6 使用） */
-  pendingSignals?: string;
+  /** 可选：信号总线（step 6 使用） */
+  signalBus?: SignalBus;
 }
 
 /** Boot Sequence 进度回调 */
@@ -178,11 +179,22 @@ export async function runBootSequence(
     const step: BootStep = "load-signals";
     const stepIndex = 5;
     emitProgress(step, stepIndex, "Loading signals...");
-    if (deps.pendingSignals) {
-      parts.push(`## 待处理信号\n\n${deps.pendingSignals}`);
-      log.info("Pending signals loaded");
+    if (deps.signalBus) {
+      const pending = deps.signalBus.getPending(config.id);
+      if (pending.length > 0) {
+        const signalText = pending
+          .map(
+            (s) =>
+              `- [${s.type}] from ${s.from} (priority: ${s.priority}): ${JSON.stringify(s.payload)}`,
+          )
+          .join("\n");
+        parts.push(`## Pending Signals\n\n${signalText}`);
+        log.info("Loaded %d pending signals", pending.length);
+      } else {
+        log.debug("load-signals: no pending signals");
+      }
     } else {
-      log.debug("load-signals: no pending signals provided");
+      log.debug("load-signals: no signalBus provided");
     }
     emitProgress(step, stepIndex, "Signals loaded");
   }

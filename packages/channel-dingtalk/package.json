@@ -1,0 +1,33 @@
+{
+  "name": "@superclaw/channel-dingtalk",
+  "version": "0.1.0",
+  "description": "DingTalk channel adapter for SuperClaw",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuperSupeng/SuperClaw.git",
+    "directory": "packages/channel-dingtalk"
+  },
+  "homepage": "https://github.com/SuperSupeng/SuperClaw",
+  "keywords": ["ai", "agent", "multi-agent", "digital-workforce", "superclaw", "dingtalk"],
+  "dependencies": {
+    "@superclaw/types": "workspace:*",
+    "dingtalk-stream": "^2.1.5"
+  }
+}

@@ -102,6 +102,8 @@ Everything in SuperClaw is built from six concepts:
 | `@superclaw/channel-cli` | Terminal channel adapter |
 | `@superclaw/channel-discord` | Discord channel adapter |
 | `@superclaw/channel-feishu` | Feishu (Lark) channel adapter |
+| `@superclaw/channel-dingtalk` | DingTalk channel adapter |
+| `@superclaw/channel-telegram` | Telegram channel adapter |
 | `create-superclaw` | Project scaffolding tool |
 
 ## Documentation

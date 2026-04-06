@@ -60,7 +60,15 @@ export default defineConfig({
             { text: "@superclaw/channel-cli", link: "/guide/packages/channel-cli" },
             { text: "@superclaw/channel-discord", link: "/guide/packages/channel-discord" },
             { text: "@superclaw/channel-feishu", link: "/guide/packages/channel-feishu" },
+            { text: "@superclaw/channel-dingtalk", link: "/guide/packages/channel-dingtalk" },
+            { text: "@superclaw/channel-telegram", link: "/guide/packages/channel-telegram" },
             { text: "create-superclaw", link: "/guide/packages/create-superclaw" },
+          ],
+        },
+        {
+          text: "Design",
+          items: [
+            { text: "Agent Store RFC", link: "/design/agent-store-rfc" },
           ],
         },
       ],

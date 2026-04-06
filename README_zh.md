@@ -102,6 +102,8 @@ SuperClaw 的一切都由六个概念构成：
 | `@superclaw/channel-cli` | 终端渠道适配器 |
 | `@superclaw/channel-discord` | Discord 渠道适配器 |
 | `@superclaw/channel-feishu` | 飞书渠道适配器 |
+| `@superclaw/channel-dingtalk` | 钉钉渠道适配器 |
+| `@superclaw/channel-telegram` | Telegram 渠道适配器 |
 | `create-superclaw` | 项目脚手架工具 |
 
 ## 文档

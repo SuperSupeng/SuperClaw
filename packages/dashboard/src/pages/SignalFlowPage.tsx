@@ -4,20 +4,34 @@ import type { SignalInfo } from "../types";
 
 const PAGE_SIZE = 20;
 
-const priorityColors: Record<string, string> = {
-  critical: "text-red-400",
-  high: "text-orange-400",
-  normal: "text-blue-400",
-  low: "text-gray-400",
-};
+function PriorityBadge({ priority }: { priority: string }) {
+  const styles: Record<string, string> = {
+    critical: "bg-red-500/15 text-red-400 ring-1 ring-red-500/30",
+    high: "bg-orange-500/15 text-orange-400 ring-1 ring-orange-500/30",
+    normal: "bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/30",
+    low: "bg-gray-500/15 text-gray-400 ring-1 ring-gray-500/30",
+  };
+  return (
+    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${styles[priority] ?? "bg-gray-500/15 text-gray-400"}`}>
+      {priority}
+    </span>
+  );
+}
 
-const statusColors: Record<string, string> = {
-  pending: "text-yellow-400",
-  delivered: "text-blue-400",
-  consumed: "text-green-400",
-  expired: "text-gray-500",
-  failed: "text-red-400",
-};
+function SignalStatusBadge({ status }: { status: string }) {
+  const styles: Record<string, string> = {
+    pending: "bg-yellow-500/15 text-yellow-400 ring-1 ring-yellow-500/30",
+    delivered: "bg-blue-500/15 text-blue-400 ring-1 ring-blue-500/30",
+    consumed: "bg-green-500/15 text-green-400 ring-1 ring-green-500/30",
+    expired: "bg-gray-500/15 text-gray-500 ring-1 ring-gray-500/30",
+    failed: "bg-red-500/15 text-red-400 ring-1 ring-red-500/30",
+  };
+  return (
+    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] ?? "bg-gray-500/15 text-gray-400"}`}>
+      {status}
+    </span>
+  );
+}
 
 export function SignalFlowPage() {
   const [signals, setSignals] = useState<SignalInfo[]>([]);
@@ -60,38 +74,54 @@ export function SignalFlowPage() {
       {loading ? (
         <div className="text-center py-12 text-gray-500">Loading...</div>
       ) : signals.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">No signals recorded.</div>
+        <div className="flex flex-col items-center justify-center py-20">
+          <svg
+            className="w-16 h-16 text-gray-700 mb-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"
+            />
+          </svg>
+          <h3 className="text-lg font-semibold text-gray-300 mb-1">No signals recorded</h3>
+          <p className="text-sm text-gray-500">Signals will appear here as agents communicate.</p>
+        </div>
       ) : (
         <>
           <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-800 text-gray-500 text-xs uppercase tracking-wider">
-                    <th className="text-left px-4 py-3 font-medium">Type</th>
-                    <th className="text-left px-4 py-3 font-medium">From → To</th>
-                    <th className="text-left px-4 py-3 font-medium">Priority</th>
-                    <th className="text-left px-4 py-3 font-medium">Status</th>
-                    <th className="text-left px-4 py-3 font-medium">Created</th>
+                  <tr className="bg-gray-800/60 border-b-2 border-gray-700">
+                    <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Type</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-gray-400">From &rarr; To</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Priority</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Status</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Created</th>
                   </tr>
                 </thead>
                 <tbody>
                   {pagedSignals.map((signal) => (
                     <tr
                       key={signal.id}
-                      className="border-b border-gray-800/50 last:border-0 hover:bg-gray-800/30"
+                      className="border-b border-gray-800/50 last:border-0 hover:bg-gray-800/50 cursor-pointer transition-colors"
                     >
                       <td className="px-4 py-3 font-medium text-gray-200">{signal.type}</td>
-                      <td className="px-4 py-3 font-mono text-xs text-gray-400">
-                        {signal.from}
-                        <span className="text-gray-600 mx-1">→</span>
-                        {signal.to.join(", ")}
+                      <td className="px-4 py-3 font-mono text-xs">
+                        <span className="text-gray-300">{signal.from}</span>
+                        <span className="text-gray-600 mx-1.5">&rarr;</span>
+                        <span className="text-gray-300">{signal.to.join(", ")}</span>
                       </td>
-                      <td className={`px-4 py-3 ${priorityColors[signal.priority] ?? ""}`}>
-                        {signal.priority}
+                      <td className="px-4 py-3">
+                        <PriorityBadge priority={signal.priority} />
                       </td>
-                      <td className={`px-4 py-3 ${statusColors[signal.status] ?? ""}`}>
-                        {signal.status}
+                      <td className="px-4 py-3">
+                        <SignalStatusBadge status={signal.status} />
                       </td>
                       <td className="px-4 py-3 text-gray-500 text-xs">
                         {new Date(signal.createdAt).toLocaleString()}

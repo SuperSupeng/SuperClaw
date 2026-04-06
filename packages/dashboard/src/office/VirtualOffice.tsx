@@ -12,7 +12,7 @@ export interface VirtualOfficeProps {
 /** Building icon for the header */
 function BuildingIcon() {
   return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden>
+    <svg width="32" height="32" viewBox="0 0 28 28" fill="none" aria-hidden>
       <rect x="4" y="8" width="20" height="18" rx="2" fill="#8B7355" />
       <rect x="6" y="10" width="4" height="4" rx="0.5" fill="#FDE68A" />
       <rect x="12" y="10" width="4" height="4" rx="0.5" fill="#FDE68A" />
@@ -41,9 +41,10 @@ export const VirtualOffice: React.FC<VirtualOfficeProps> = ({
       <header className="office-header">
         <h1 className="office-title">
           <BuildingIcon />
-          SuperClaw HQ
+          <span className="office-title-text">SuperClaw HQ</span>
         </h1>
         <p className="office-subtitle">
+          <span className="online-dot" />
           {onlineCount} of {agents.length} agents online
         </p>
       </header>
@@ -55,18 +56,26 @@ export const VirtualOffice: React.FC<VirtualOfficeProps> = ({
         <WaterCooler />
       </div>
 
-      {/* Desk grid */}
-      <div className="desk-grid">
-        {agents.map((agent) => (
-          <Desk
-            key={agent.id}
-            agent={agent}
-            onClick={
-              onAgentClick ? () => onAgentClick(agent.id) : undefined
-            }
-          />
-        ))}
-      </div>
+      {/* Desk grid or empty state */}
+      {agents.length === 0 ? (
+        <div className="office-empty">
+          <BuildingIcon />
+          <h2>Your office is empty</h2>
+          <p>Configure agents to get started</p>
+        </div>
+      ) : (
+        <div className="desk-grid">
+          {agents.map((agent) => (
+            <Desk
+              key={agent.id}
+              agent={agent}
+              onClick={
+                onAgentClick ? () => onAgentClick(agent.id) : undefined
+              }
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

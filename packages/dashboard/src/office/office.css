@@ -2,15 +2,33 @@
    SuperClaw Virtual Office — CSS Animations & Styles
    ============================================================ */
 
+:root {
+  --duration-fast: 0.2s;
+  --duration-base: 0.5s;
+  --duration-slow: 1.5s;
+}
+
 /* ---------- Office Floor ---------- */
 .office-floor {
   position: relative;
   min-height: 100vh;
   padding: 2rem;
   background:
-    linear-gradient(135deg, #f5e6d3 0%, #ede0d4 50%, #e6d5c3 100%);
+    radial-gradient(ellipse at 50% 40%, rgba(255,248,235,0.35) 0%, transparent 60%),
+    linear-gradient(135deg, #f0e0cf 0%, #e8d5c4 35%, #dfc9b3 70%, #e4d0bc 100%);
   background-size: 100% 100%;
   overflow: auto;
+}
+
+/* Noise texture overlay for grain/depth */
+.office-floor::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .office-floor::before {
@@ -22,17 +40,18 @@
       90deg,
       transparent,
       transparent 119px,
-      rgba(0, 0, 0, 0.03) 119px,
-      rgba(0, 0, 0, 0.03) 120px
+      rgba(0, 0, 0, 0.018) 119px,
+      rgba(0, 0, 0, 0.018) 120px
     ),
     repeating-linear-gradient(
       0deg,
       transparent,
       transparent 119px,
-      rgba(0, 0, 0, 0.03) 119px,
-      rgba(0, 0, 0, 0.03) 120px
+      rgba(0, 0, 0, 0.018) 119px,
+      rgba(0, 0, 0, 0.018) 120px
     );
   pointer-events: none;
+  z-index: 0;
 }
 
 /* ---------- Office Header ---------- */
@@ -45,23 +64,46 @@
 
 .office-title {
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #4a3728;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
 }
 
+.office-title-text {
+  background: linear-gradient(135deg, #5a3e28 0%, #8b6914 50%, #5a3e28 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+}
+
 .office-title svg {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));
 }
 
 .office-subtitle {
   font-size: 0.85rem;
-  color: #8b7355;
+  color: #7a6548;
   margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.online-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+  animation: gentle-bob 2s ease-in-out infinite;
 }
 
 /* ---------- Desk Grid ---------- */
@@ -87,11 +129,13 @@
 
 .decoration-item {
   opacity: 0.85;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.1));
 }
 
 .decoration-item:hover {
   opacity: 1;
+  transform: translateY(-2px);
 }
 
 /* ---------- Desk Container ---------- */
@@ -102,29 +146,49 @@
   align-items: center;
   padding: 1.25rem 1rem 1rem;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow:
-    0 2px 8px rgba(74, 55, 40, 0.08),
-    0 1px 2px rgba(74, 55, 40, 0.04);
+    0 1px 2px rgba(74, 55, 40, 0.04),
+    0 4px 12px rgba(74, 55, 40, 0.06),
+    0 8px 24px rgba(74, 55, 40, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
   cursor: pointer;
   transition:
     transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.25s ease;
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
   will-change: transform;
+  animation: desk-entrance 0.4s ease-out both;
 }
 
 .desk-container:hover {
-  transform: translateY(-4px) scale(1.02);
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(255, 255, 255, 0.8);
   box-shadow:
-    0 8px 24px rgba(74, 55, 40, 0.12),
-    0 2px 6px rgba(74, 55, 40, 0.06);
+    0 4px 8px rgba(74, 55, 40, 0.06),
+    0 12px 32px rgba(74, 55, 40, 0.1),
+    0 20px 48px rgba(74, 55, 40, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 0 24px rgba(139, 115, 85, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .desk-container:active {
   transform: translateY(-2px) scale(1.01);
 }
+
+/* Stagger entrance animation for each desk */
+.desk-container:nth-child(1) { animation-delay: 0.05s; }
+.desk-container:nth-child(2) { animation-delay: 0.1s; }
+.desk-container:nth-child(3) { animation-delay: 0.15s; }
+.desk-container:nth-child(4) { animation-delay: 0.2s; }
+.desk-container:nth-child(5) { animation-delay: 0.25s; }
+.desk-container:nth-child(6) { animation-delay: 0.3s; }
+.desk-container:nth-child(7) { animation-delay: 0.35s; }
+.desk-container:nth-child(8) { animation-delay: 0.4s; }
 
 /* ---------- Desk Surface ---------- */
 .desk-surface {
@@ -152,6 +216,20 @@
   overflow: hidden;
 }
 
+/* Green LED on monitor frame */
+.desk-monitor::before {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 4px rgba(34, 197, 94, 0.6);
+  z-index: 2;
+}
+
 .desk-monitor::after {
   content: "";
   position: absolute;
@@ -168,12 +246,21 @@
   width: 100%;
   height: 100%;
   background: #1e293b;
-  transition: background 0.3s ease;
+  transition: background var(--duration-fast) ease;
 }
 
 .desk-monitor-screen.busy {
   background: #0f172a;
-  animation: pulse-glow 1.5s ease-in-out infinite;
+  animation: pulse-glow var(--duration-slow) ease-in-out infinite;
+  /* Scan-line effect via repeating gradient */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(59, 130, 246, 0.04) 2px,
+      rgba(59, 130, 246, 0.04) 4px
+    );
 }
 
 .desk-monitor-screen.error {
@@ -182,6 +269,12 @@
 
 .desk-monitor-screen.shutdown {
   background: #111;
+}
+
+/* When shutdown, dim the LED */
+.desk-container:has(.desk-monitor-screen.shutdown) .desk-monitor::before {
+  background: #555;
+  box-shadow: none;
 }
 
 /* ---------- Chair ---------- */
@@ -218,24 +311,47 @@
 }
 
 .desk-name {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #4a3728;
+  color: #3d2e1f;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
 }
 
 .desk-tier {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.tier-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
 }
 
 .desk-status-text {
-  font-size: 0.7rem;
-  color: #8b7355;
+  font-size: 0.75rem;
+  color: #7a6548;
   margin-top: 2px;
   text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 /* ---------- Hover Info ---------- */
@@ -244,17 +360,21 @@
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(-8px);
-  background: rgba(30, 30, 30, 0.92);
+  background: rgba(15, 15, 20, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: #fff;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  font-size: 0.7rem;
-  line-height: 1.5;
+  padding: 0.65rem 0.9rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  line-height: 1.6;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--duration-fast) ease 0.3s;
   z-index: 10;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .desk-hover-info::after {
@@ -264,11 +384,33 @@
   left: 50%;
   transform: translateX(-50%);
   border: 5px solid transparent;
-  border-top-color: rgba(30, 30, 30, 0.92);
+  border-top-color: rgba(15, 15, 20, 0.95);
 }
 
 .desk-container:hover .desk-hover-info {
   opacity: 1;
+}
+
+.hover-info-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+
+.hover-info-label {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.hover-info-value {
+  color: #fff;
+  font-weight: 500;
+  text-align: right;
+}
+
+.hover-info-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 4px 0;
 }
 
 /* ---------- Avatar Wrapper ---------- */
@@ -286,11 +428,51 @@
   z-index: 2;
 }
 
+/* ---------- Empty State ---------- */
+.office-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.office-empty svg {
+  opacity: 0.5;
+}
+
+.office-empty h2 {
+  font-size: 1.2rem;
+  color: #4a3728;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.office-empty p {
+  font-size: 0.85rem;
+  color: #8b7355;
+}
+
 /* ============================================================
    KEYFRAME ANIMATIONS
    ============================================================ */
 
-/* Typing — hands bobbing */
+/* Desk entrance — fade in + slide up */
+@keyframes desk-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Typing — hands bobbing (snappier) */
 @keyframes typing {
   0%, 100% { transform: translateY(0); }
   25% { transform: translateY(-2px); }
@@ -305,13 +487,13 @@
   95% { transform: rotate(-5deg) translateY(-1px); }
 }
 
-/* Error shake */
+/* Error shake — more dramatic */
 @keyframes error-shake {
   0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-3px); }
-  40% { transform: translateX(3px); }
-  60% { transform: translateX(-2px); }
-  80% { transform: translateX(2px); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
 }
 
 /* Booting spin (for gear icon) */
@@ -338,13 +520,13 @@
   }
 }
 
-/* Pulse glow (for busy monitor) */
+/* Pulse glow (for busy monitor) — stronger */
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: inset 0 0 6px rgba(59, 130, 246, 0.3);
+    box-shadow: inset 0 0 8px rgba(59, 130, 246, 0.3);
   }
   50% {
-    box-shadow: inset 0 0 14px rgba(59, 130, 246, 0.7);
+    box-shadow: inset 0 0 18px rgba(59, 130, 246, 0.8);
   }
 }
 
@@ -355,11 +537,11 @@
     transform: translateY(0) scaleX(1);
   }
   20% {
-    opacity: 0.6;
+    opacity: 0.7;
   }
   100% {
     opacity: 0;
-    transform: translateY(-14px) scaleX(1.4);
+    transform: translateY(-18px) scaleX(1.4);
   }
 }
 
@@ -373,6 +555,14 @@
 @keyframes excl-bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-4px); }
+}
+
+/* Error bubble shake */
+@keyframes bubble-shake {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(3deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(-2px) rotate(-2deg); }
 }
 
 /* Idle look around */
@@ -401,9 +591,34 @@
   50% { transform: translateY(-1.5px); }
 }
 
+/* Water bubble rise */
+@keyframes bubble-rise {
+  0% {
+    opacity: 0.7;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.5);
+  }
+}
+
+/* Leaf / plant sway */
+@keyframes leaf-sway {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(2deg); }
+  75% { transform: rotate(-2deg); }
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(1.5deg); }
+  75% { transform: rotate(-1.5deg); }
+}
+
 /* ---------- Avatar state classes ---------- */
 .avatar-busy .hands {
-  animation: typing 0.3s ease-in-out infinite;
+  animation: typing 0.25s ease-in-out infinite;
 }
 
 .avatar-busy {
@@ -419,7 +634,7 @@
 }
 
 .avatar-error {
-  animation: error-shake 0.5s ease-in-out infinite;
+  animation: error-shake var(--duration-base) ease-in-out infinite;
 }
 
 .avatar-booting {
@@ -429,35 +644,36 @@
 /* ---------- Status effect particles ---------- */
 .effect-particle {
   position: absolute;
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #3b82f6;
+  color: #7cc8fc;
   animation: float-up 1.8s ease-out infinite;
   will-change: transform, opacity;
 }
 
 .effect-particle:nth-child(1) { left: 15%; animation-delay: 0s; }
-.effect-particle:nth-child(2) { left: 40%; animation-delay: 0.4s; }
-.effect-particle:nth-child(3) { left: 65%; animation-delay: 0.8s; }
-.effect-particle:nth-child(4) { left: 85%; animation-delay: 1.2s; }
+.effect-particle:nth-child(2) { left: 30%; animation-delay: 0.3s; }
+.effect-particle:nth-child(3) { left: 48%; animation-delay: 0.6s; }
+.effect-particle:nth-child(4) { left: 65%; animation-delay: 0.9s; }
+.effect-particle:nth-child(5) { left: 82%; animation-delay: 1.2s; }
 
 /* Error bubble */
 .error-bubble {
   position: absolute;
   top: -4px;
   right: -2px;
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   background: #ef4444;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-weight: 800;
-  font-size: 0.75rem;
-  animation: excl-bounce 1s ease-in-out infinite;
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+  font-weight: 900;
+  font-size: 0.95rem;
+  animation: bubble-shake 1s ease-in-out infinite;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.6), 0 0 4px rgba(239, 68, 68, 0.4);
 }
 
 .error-glow {
@@ -465,7 +681,7 @@
   inset: -4px;
   border-radius: 50%;
   background: rgba(239, 68, 68, 0.15);
-  animation: error-pulse 1.5s ease-in-out infinite;
+  animation: error-pulse var(--duration-slow) ease-in-out infinite;
 }
 
 /* Booting gear */
@@ -474,8 +690,13 @@
   top: 2px;
   right: 0;
   animation: booting-spin 2s linear infinite;
-  color: #94a3b8;
+  color: #fbbf24;
   will-change: transform;
+}
+
+.booting-gear svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* Booting dots */
@@ -492,7 +713,7 @@
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #94a3b8;
+  background: #fbbf24;
   animation: booting-pulse 1.2s ease-in-out infinite;
 }
 
@@ -508,17 +729,17 @@
 
 .steam-wisp {
   position: absolute;
-  width: 4px;
-  height: 8px;
+  width: 5px;
+  height: 11px;
   border-radius: 50%;
-  background: rgba(180, 160, 140, 0.4);
+  background: rgba(180, 160, 140, 0.6);
   animation: steam 2.5s ease-out infinite;
   will-change: transform, opacity;
 }
 
 .steam-wisp:nth-child(1) { left: 0; animation-delay: 0s; }
-.steam-wisp:nth-child(2) { left: 5px; animation-delay: 0.8s; }
-.steam-wisp:nth-child(3) { left: 2px; animation-delay: 1.6s; }
+.steam-wisp:nth-child(2) { left: 6px; animation-delay: 0.8s; }
+.steam-wisp:nth-child(3) { left: 3px; animation-delay: 1.6s; }
 
 /* Shutdown sign */
 .shutdown-sign {
@@ -544,15 +765,31 @@
 
 .zzz-letter {
   position: absolute;
-  color: #94a3b8;
+  color: #a78bfa;
   font-weight: 700;
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   animation: zzz-float 2.5s ease-out infinite;
 }
 
-.zzz-letter:nth-child(1) { font-size: 0.5rem; animation-delay: 0s; }
-.zzz-letter:nth-child(2) { font-size: 0.6rem; animation-delay: 0.7s; }
-.zzz-letter:nth-child(3) { font-size: 0.7rem; animation-delay: 1.4s; }
+.zzz-letter:nth-child(1) { font-size: 0.9rem; animation-delay: 0s; }
+.zzz-letter:nth-child(2) { font-size: 1.05rem; animation-delay: 0.7s; }
+.zzz-letter:nth-child(3) { font-size: 1.2rem; animation-delay: 1.4s; }
+
+/* ---------- Plant sway animation ---------- */
+.plant-leaves {
+  animation: leaf-sway 4s ease-in-out infinite;
+  transform-origin: 18px 34px;
+}
+
+.plant-sway {
+  animation: sway 4s ease-in-out infinite;
+  transform-origin: 18px 52px;
+}
+
+/* ---------- Water cooler bubbles ---------- */
+.water-bubble-anim {
+  animation: bubble-rise 3s ease-out infinite;
+}
 
 /* ============================================================
    RESPONSIVE — Mobile

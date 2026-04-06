@@ -8,6 +8,14 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  *:focus-visible {
+    @apply outline-none ring-2 ring-claw-400/50 ring-offset-2 ring-offset-gray-950;
+  }
+
+  ::selection {
+    background: #0c8ee840;
+  }
 }
 
 /* Custom scrollbar */

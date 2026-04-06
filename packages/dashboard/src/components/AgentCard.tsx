@@ -3,9 +3,9 @@ import type { AgentInfo } from "../types";
 import { StatusBadge } from "./StatusBadge";
 
 const tierColors: Record<string, string> = {
-  executive: "text-purple-400 bg-purple-500/10",
-  coordinator: "text-claw-400 bg-claw-500/10",
-  worker: "text-gray-400 bg-gray-500/10",
+  executive: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+  coordinator: "text-claw-400 bg-claw-500/10 border-claw-500/20",
+  worker: "text-gray-400 bg-gray-500/10 border-gray-500/20",
 };
 
 function timeAgo(iso: string | null): string {
@@ -27,13 +27,20 @@ export function AgentCard({ agent }: { agent: AgentInfo }) {
     <button
       type="button"
       onClick={() => navigate(`/agents/${agent.id}`)}
-      className="w-full text-left bg-gray-900 border border-gray-800 rounded-xl p-4 hover:border-gray-700 hover:scale-[1.02] transition-all duration-200 cursor-pointer"
+      className="w-full text-left bg-gray-800/40 border border-gray-700/50 rounded-xl p-4 shadow-md shadow-black/20 hover:bg-gray-800/70 hover:border-gray-600 hover:shadow-lg hover:shadow-black/30 hover:scale-[1.02] transition-all duration-200 cursor-pointer"
     >
       <div className="flex items-start justify-between mb-3">
         <div>
-          <h3 className="font-semibold text-gray-100">{agent.name}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-gray-100">{agent.name}</h3>
+            {agent.team && (
+              <span className="inline-block px-2 py-0.5 rounded-full bg-gray-700/50 border border-gray-600/30 text-[10px] text-gray-400 uppercase tracking-wider">
+                {agent.team}
+              </span>
+            )}
+          </div>
           <span
-            className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium ${tierColors[agent.tier] ?? ""}`}
+            className={`inline-block mt-1 px-2.5 py-0.5 rounded-full border text-xs font-medium ${tierColors[agent.tier] ?? ""}`}
           >
             {agent.tier}
           </span>
@@ -41,16 +48,16 @@ export function AgentCard({ agent }: { agent: AgentInfo }) {
         <StatusBadge status={agent.status} />
       </div>
 
-      <div className="flex items-center gap-4 text-xs text-gray-500">
-        <span>{agent.messageCount} messages</span>
-        <span>Active {timeAgo(agent.lastActiveAt)}</span>
-      </div>
-
-      {agent.team && (
-        <div className="mt-2 text-xs text-gray-600">
-          Team: <span className="text-gray-400">{agent.team}</span>
+      <div className="grid grid-cols-2 gap-3 mt-4">
+        <div>
+          <span className="block text-gray-500 text-xs mb-0.5">Messages</span>
+          <span className="text-gray-200 font-medium text-sm">{agent.messageCount}</span>
         </div>
-      )}
+        <div>
+          <span className="block text-gray-500 text-xs mb-0.5">Last Active</span>
+          <span className="text-gray-200 font-medium text-sm">{timeAgo(agent.lastActiveAt)}</span>
+        </div>
+      </div>
     </button>
   );
 }

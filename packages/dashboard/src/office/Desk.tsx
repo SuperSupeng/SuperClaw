@@ -22,6 +22,14 @@ const STATUS_LABEL: Record<string, string> = {
   shutdown: "Offline",
 };
 
+const STATUS_DOT_COLOR: Record<string, string> = {
+  booting: "#FBBF24",
+  ready: "#22C55E",
+  busy: "#3B82F6",
+  error: "#EF4444",
+  shutdown: "#94A3B8",
+};
+
 function formatTime(iso: string | null): string {
   if (!iso) return "—";
   try {
@@ -52,20 +60,52 @@ export const Desk: React.FC<DeskProps> = ({ agent, onClick }) => {
         }
       }}
     >
-      {/* Hover tooltip */}
+      {/* Hover tooltip — grid layout with dividers */}
       {hovered && (
         <div className="desk-hover-info">
-          <div>
-            <strong>{agent.name}</strong> ({agent.tier})
+          <div className="hover-info-row">
+            <span className="hover-info-label">Agent</span>
+            <span className="hover-info-value">
+              <strong>{agent.name}</strong>
+            </span>
           </div>
-          {agent.team && <div>Team: {agent.team}</div>}
-          <div>Messages: {agent.messageCount}</div>
-          {agent.bootedAt && <div>Booted: {formatTime(agent.bootedAt)}</div>}
+          <div className="hover-info-row">
+            <span className="hover-info-label">Tier</span>
+            <span className="hover-info-value">{agent.tier}</span>
+          </div>
+          {agent.team && (
+            <div className="hover-info-row">
+              <span className="hover-info-label">Team</span>
+              <span className="hover-info-value">{agent.team}</span>
+            </div>
+          )}
+          <div className="hover-info-divider" />
+          <div className="hover-info-row">
+            <span className="hover-info-label">Messages</span>
+            <span className="hover-info-value">{agent.messageCount}</span>
+          </div>
+          {agent.bootedAt && (
+            <div className="hover-info-row">
+              <span className="hover-info-label">Booted</span>
+              <span className="hover-info-value">{formatTime(agent.bootedAt)}</span>
+            </div>
+          )}
           {agent.lastActiveAt && (
-            <div>Last active: {formatTime(agent.lastActiveAt)}</div>
+            <div className="hover-info-row">
+              <span className="hover-info-label">Last active</span>
+              <span className="hover-info-value">{formatTime(agent.lastActiveAt)}</span>
+            </div>
           )}
           {agent.error && (
-            <div style={{ color: "#fca5a5" }}>Error: {agent.error}</div>
+            <>
+              <div className="hover-info-divider" />
+              <div className="hover-info-row">
+                <span className="hover-info-label">Error</span>
+                <span className="hover-info-value" style={{ color: "#f87171" }}>
+                  {agent.error}
+                </span>
+              </div>
+            </>
           )}
         </div>
       )}
@@ -98,7 +138,13 @@ export const Desk: React.FC<DeskProps> = ({ agent, onClick }) => {
           <span className="desk-tier">{TIER_ICON[agent.tier]}</span>
           {agent.name}
         </div>
-        <div className="desk-status-text">{STATUS_LABEL[agent.status]}</div>
+        <div className="desk-status-text">
+          <span
+            className="status-dot"
+            style={{ backgroundColor: STATUS_DOT_COLOR[agent.status] }}
+          />
+          {STATUS_LABEL[agent.status]}
+        </div>
       </div>
     </div>
   );

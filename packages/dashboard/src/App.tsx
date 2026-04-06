@@ -15,19 +15,49 @@ const navItems = [
   { to: "/config", label: "Config", icon: "⚙️" },
 ];
 
+function RefreshIcon({ spinning }: { spinning: boolean }) {
+  return (
+    <svg
+      className={`w-3.5 h-3.5 ${spinning ? "animate-spin" : ""}`}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4 4v5h5M20 20v-5h-5"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M20.49 9A9 9 0 0 0 5.64 5.64L4 9m16-4v5M3.51 15A9 9 0 0 0 18.36 18.36L20 15"
+      />
+    </svg>
+  );
+}
+
 export function App() {
   const { agents, loading, error, updateFromEvent, refresh } = useAgents();
   const { connected, events } = useWebSocket({ onEvent: updateFromEvent });
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
+
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true);
+    refresh();
+    setTimeout(() => setRefreshing(false), 800);
+  }, [refresh]);
 
   return (
     <div className="flex h-screen">
       {/* Mobile backdrop overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden animate-fade-in"
           onClick={closeSidebar}
         />
       )}
@@ -35,30 +65,36 @@ export function App() {
       {/* Sidebar */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-40 w-60 bg-gray-900 border-r border-gray-800 flex flex-col
+          fixed inset-y-0 left-0 z-40 w-60 bg-gray-900 border-r border-gray-800/80
+          flex flex-col shadow-xl shadow-black/20
           transform transition-transform duration-200 ease-in-out
           md:static md:translate-x-0 md:shrink-0
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        <div className="p-5 border-b border-gray-800">
+        <div className="p-5 border-b border-gray-800/80">
           <h1 className="text-lg font-bold text-gray-100">
-            <span className="text-claw-400">Super</span>Claw
+            <span className="text-claw-400 drop-shadow-[0_0_8px_rgba(54,170,247,0.3)]">
+              Super
+            </span>
+            Claw
           </h1>
-          <p className="text-xs text-gray-500 mt-0.5">Agent Dashboard</p>
+          <p className="text-[11px] text-gray-500 mt-1 tracking-wide">
+            Agent Dashboard
+          </p>
         </div>
 
-        <nav className="flex-1 p-3 space-y-1">
+        <nav className="flex-1 p-3 space-y-0.5">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={closeSidebar}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
                   isActive
-                    ? "bg-gray-800 text-gray-100"
-                    : "text-gray-400 hover:text-gray-200 hover:bg-gray-800/50"
+                    ? "border-l-2 border-claw-400 bg-claw-950/40 text-claw-300 font-medium"
+                    : "border-l-2 border-transparent text-gray-400 hover:text-gray-200 hover:bg-gray-800/50"
                 }`
               }
             >
@@ -68,15 +104,21 @@ export function App() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-gray-800 text-xs text-gray-600">
-          v0.1.1
+        <div className="px-5 py-3 border-t border-gray-800/80">
+          <span className="text-[10px] text-gray-600 tracking-wider uppercase">
+            v0.1.1
+          </span>
         </div>
       </aside>
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="h-12 shrink-0 flex items-center justify-between px-4 md:px-5 border-b border-gray-800 bg-gray-900/50">
+        <header
+          className={`h-12 shrink-0 flex items-center justify-between px-4 md:px-5 border-b border-gray-800/80 bg-gray-900/60 backdrop-blur-sm ${
+            !connected ? "shadow-[inset_0_-1px_0_0_rgba(239,68,68,0.3)]" : ""
+          }`}
+        >
           {/* Hamburger — mobile only */}
           <button
             type="button"
@@ -84,27 +126,43 @@ export function App() {
             className="md:hidden p-1.5 -ml-1 text-gray-400 hover:text-gray-200 transition-colors"
             aria-label="Open sidebar"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
 
           {/* Spacer on desktop (no hamburger) */}
           <div className="hidden md:block" />
 
-          <div className="flex items-center gap-2 text-xs text-gray-500">
-            <span
-              className={`w-2 h-2 rounded-full shrink-0 ${connected ? "bg-green-400" : "bg-red-400"}`}
-            />
-            <span className="hidden sm:inline">
-              {connected ? "Connected" : "Disconnected"}
-            </span>
+          <div className="flex items-center gap-3 text-xs text-gray-500">
+            <div className="flex items-center gap-2">
+              <span
+                className={`w-2.5 h-2.5 rounded-full shrink-0 transition-all duration-300 ${
+                  connected
+                    ? "bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.5)]"
+                    : "bg-red-400 animate-pulse shadow-[0_0_6px_rgba(248,113,113,0.4)]"
+                }`}
+              />
+              <span className="hidden sm:inline">
+                {connected ? "Connected" : "Disconnected"}
+              </span>
+            </div>
             <button
-              onClick={refresh}
-              className="ml-2 p-1 rounded hover:bg-gray-800 transition-colors text-gray-400 hover:text-gray-200"
+              onClick={handleRefresh}
+              className="ml-1 p-1.5 rounded-md hover:bg-gray-800 transition-all duration-200 text-gray-400 hover:text-gray-200"
               title="Refresh agents"
             >
-              🔄
+              <RefreshIcon spinning={refreshing} />
             </button>
           </div>
         </header>
@@ -113,9 +171,22 @@ export function App() {
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           <Routes>
             <Route path="/" element={<Navigate to="/office" replace />} />
-            <Route path="/office" element={<OfficePage agents={agents} loading={loading} error={error} />} />
-            <Route path="/agents" element={<AgentListPage agents={agents} loading={loading} error={error} />} />
-            <Route path="/agents/:id" element={<AgentDetailPage events={events} />} />
+            <Route
+              path="/office"
+              element={
+                <OfficePage agents={agents} loading={loading} error={error} />
+              }
+            />
+            <Route
+              path="/agents"
+              element={
+                <AgentListPage agents={agents} loading={loading} error={error} />
+              }
+            />
+            <Route
+              path="/agents/:id"
+              element={<AgentDetailPage events={events} />}
+            />
             <Route path="/signals" element={<SignalFlowPage />} />
             <Route path="/config" element={<ConfigPage />} />
           </Routes>

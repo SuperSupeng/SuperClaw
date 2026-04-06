@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 import type { AgentStatus, AgentTier } from "../types";
 
 export interface AgentAvatarProps {
@@ -19,18 +19,30 @@ const SHIRT_HIGHLIGHT: Record<AgentTier, string> = {
   worker: "#34D399",
 };
 
+const SHIRT_SHADOW: Record<AgentTier, string> = {
+  executive: "#7C3AED",
+  coordinator: "#2563EB",
+  worker: "#059669",
+};
+
 function getFace(status: AgentStatus) {
   switch (status) {
     case "ready":
-      // happy: curved smile, open eyes
+      // happy: curved smile, open eyes, subtle eyebrow arches
       return (
         <>
+          {/* Eyebrow arches */}
+          <path d="M30 24 Q33 22 36 24" stroke="#1e1e1e" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+          <path d="M44 24 Q47 22 50 24" stroke="#1e1e1e" strokeWidth="0.8" fill="none" strokeLinecap="round" />
           {/* Eyes */}
           <circle cx="33" cy="28" r="2" fill="#1e1e1e" />
           <circle cx="47" cy="28" r="2" fill="#1e1e1e" />
-          {/* Smile */}
+          {/* Eye highlights */}
+          <circle cx="34" cy="27" r="0.6" fill="#fff" />
+          <circle cx="48" cy="27" r="0.6" fill="#fff" />
+          {/* Wider smile */}
           <path
-            d="M34 35 Q40 40 46 35"
+            d="M33 35 Q40 41 47 35"
             stroke="#1e1e1e"
             strokeWidth="1.5"
             fill="none"
@@ -39,7 +51,7 @@ function getFace(status: AgentStatus) {
         </>
       );
     case "busy":
-      // focused: determined eyes, straight mouth
+      // focused: determined eyes, straight mouth, sweat drop
       return (
         <>
           {/* Focused eyes — slightly narrowed */}
@@ -55,26 +67,30 @@ function getFace(status: AgentStatus) {
             strokeWidth="1.5"
             strokeLinecap="round"
           />
+          {/* Sweat drop */}
+          <path d="M52 22 Q53 25 52 27 Q51 25 52 22Z" fill="#93C5FD" opacity="0.7" />
         </>
       );
     case "error":
-      // sad: worried eyes, frown
+      // sad: worried eyes, deeper frown, tear drop
       return (
         <>
           {/* Worried eyes */}
           <circle cx="33" cy="29" r="2" fill="#1e1e1e" />
           <circle cx="47" cy="29" r="2" fill="#1e1e1e" />
           {/* Eyebrows — worried */}
-          <line x1="30" y1="24" x2="35" y2="25" stroke="#1e1e1e" strokeWidth="1.2" strokeLinecap="round" />
-          <line x1="50" y1="24" x2="45" y2="25" stroke="#1e1e1e" strokeWidth="1.2" strokeLinecap="round" />
-          {/* Frown */}
+          <line x1="30" y1="24" x2="35" y2="25.5" stroke="#1e1e1e" strokeWidth="1.2" strokeLinecap="round" />
+          <line x1="50" y1="24" x2="45" y2="25.5" stroke="#1e1e1e" strokeWidth="1.2" strokeLinecap="round" />
+          {/* Deeper frown */}
           <path
-            d="M34 38 Q40 34 46 38"
+            d="M33 38 Q40 33 47 38"
             stroke="#1e1e1e"
             strokeWidth="1.5"
             fill="none"
             strokeLinecap="round"
           />
+          {/* Tear drop */}
+          <path d="M49 30 Q50 34 49 36 Q48 34 49 30Z" fill="#93C5FD" opacity="0.6" />
         </>
       );
     case "booting":
@@ -100,7 +116,7 @@ function getFace(status: AgentStatus) {
   }
 }
 
-function getArms(status: AgentStatus, shirtColor: string) {
+function getArms(status: AgentStatus, shirtColor: string, skinGrad: string) {
   switch (status) {
     case "busy":
       // Both hands on keyboard, animated via CSS class
@@ -122,9 +138,9 @@ function getArms(status: AgentStatus, shirtColor: string) {
             fill="none"
             strokeLinecap="round"
           />
-          {/* Hands */}
-          <circle cx="30" cy="78" r="3" fill="#FBBF24" />
-          <circle cx="50" cy="78" r="3" fill="#FBBF24" />
+          {/* Hands — larger */}
+          <circle cx="30" cy="78" r="4" fill={`url(#${skinGrad})`} />
+          <circle cx="50" cy="78" r="4" fill={`url(#${skinGrad})`} />
         </g>
       );
     case "ready":
@@ -139,15 +155,18 @@ function getArms(status: AgentStatus, shirtColor: string) {
             fill="none"
             strokeLinecap="round"
           />
-          <circle cx="22" cy="74" r="3" fill="#FBBF24" />
-          {/* Coffee cup */}
+          <circle cx="22" cy="74" r="4" fill={`url(#${skinGrad})`} />
+          {/* Coffee cup — slightly larger */}
           <g className="coffee-group" style={{ animation: "idle-coffee 5s ease-in-out infinite" }}>
-            <rect x="16" y="72" width="10" height="12" rx="2" fill="#8B5E3C" />
-            <rect x="14" y="71" width="14" height="3" rx="1.5" fill="#A0724A" />
+            <rect x="14" y="71" width="13" height="14" rx="2.5" fill="#8B5E3C" />
+            <rect x="12" y="69" width="17" height="3.5" rx="1.5" fill="#A0724A" />
             {/* Coffee liquid */}
-            <rect x="17" y="75" width="8" height="4" rx="1" fill="#5C3A1E" />
+            <rect x="15" y="74" width="11" height="5" rx="1" fill="#5C3A1E" />
             {/* Handle */}
-            <path d="M26 75 Q30 78 26 81" stroke="#8B5E3C" strokeWidth="1.5" fill="none" />
+            <path d="M27 74 Q32 77 27 81" stroke="#8B5E3C" strokeWidth="1.5" fill="none" />
+            {/* Steam wisps above cup */}
+            <path d="M18 68 Q19 65 18 63" stroke="rgba(180,160,140,0.4)" strokeWidth="1" fill="none" strokeLinecap="round" />
+            <path d="M22 67 Q23 64 22 62" stroke="rgba(180,160,140,0.35)" strokeWidth="0.8" fill="none" strokeLinecap="round" />
           </g>
           {/* Right arm — resting */}
           <path
@@ -157,7 +176,7 @@ function getArms(status: AgentStatus, shirtColor: string) {
             fill="none"
             strokeLinecap="round"
           />
-          <circle cx="56" cy="78" r="3" fill="#FBBF24" />
+          <circle cx="56" cy="78" r="4" fill={`url(#${skinGrad})`} />
         </g>
       );
     case "error":
@@ -172,7 +191,7 @@ function getArms(status: AgentStatus, shirtColor: string) {
             fill="none"
             strokeLinecap="round"
           />
-          <circle cx="30" cy="38" r="3" fill="#FBBF24" />
+          <circle cx="30" cy="38" r="4" fill={`url(#${skinGrad})`} />
           {/* Right arm to head */}
           <path
             d="M54 58 Q62 48 50 38"
@@ -181,7 +200,7 @@ function getArms(status: AgentStatus, shirtColor: string) {
             fill="none"
             strokeLinecap="round"
           />
-          <circle cx="50" cy="38" r="3" fill="#FBBF24" />
+          <circle cx="50" cy="38" r="4" fill={`url(#${skinGrad})`} />
         </g>
       );
     case "booting":
@@ -215,8 +234,12 @@ export const AgentAvatar: React.FC<AgentAvatarProps> = ({
   tier,
   name,
 }) => {
+  const uid = useId();
+  const skinGradId = `skin-${uid}`;
+  const shirtGradId = `shirt-${uid}`;
   const shirtColor = SHIRT_COLORS[tier];
   const highlight = SHIRT_HIGHLIGHT[tier];
+  const shadow = SHIRT_SHADOW[tier];
 
   if (status === "shutdown") {
     // Empty — no avatar, just empty chair shown by parent
@@ -246,33 +269,46 @@ export const AgentAvatar: React.FC<AgentAvatarProps> = ({
       aria-label={`${name} — ${status}`}
       role="img"
     >
-      {/* Head */}
+      <defs>
+        {/* Skin radial gradient */}
+        <radialGradient id={skinGradId} cx="50%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="#FDD8A5" />
+          <stop offset="100%" stopColor="#F5C77E" />
+        </radialGradient>
+        {/* Shirt linear gradient */}
+        <linearGradient id={shirtGradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={highlight} />
+          <stop offset="100%" stopColor={shadow} />
+        </linearGradient>
+      </defs>
+
+      {/* Head — slightly smaller r=14 */}
       <g className="head-group">
         {/* Hair / top */}
-        <ellipse cx="40" cy="18" rx="15" ry="4" fill="#6B4226" />
+        <ellipse cx="40" cy="20" rx="13" ry="4" fill="#6B4226" />
         {/* Head circle */}
-        <circle cx="40" cy="26" r="16" fill="#FCD34D" />
+        <circle cx="40" cy="27" r="14" fill={`url(#${skinGradId})`} />
         {/* Cheeks */}
-        <circle cx="30" cy="32" r="3" fill="#FBBF24" opacity="0.5" />
-        <circle cx="50" cy="32" r="3" fill="#FBBF24" opacity="0.5" />
+        <circle cx="31" cy="32" r="2.5" fill="#FBBF24" opacity="0.4" />
+        <circle cx="49" cy="32" r="2.5" fill="#FBBF24" opacity="0.4" />
         {/* Face */}
         {getFace(status)}
       </g>
 
-      {/* Body / torso */}
-      <rect x="26" y="44" width="28" height="26" rx="8" fill={shirtColor} />
-      {/* Shirt highlight */}
-      <rect x="30" y="46" width="10" height="6" rx="3" fill={highlight} opacity="0.4" />
+      {/* Body / torso — with gradient */}
+      <rect x="26" y="44" width="28" height="26" rx="8" fill={`url(#${shirtGradId})`} />
+      {/* Shirt highlight — softer */}
+      <rect x="30" y="46" width="10" height="6" rx="3" fill={highlight} opacity="0.3" />
 
       {/* Arms */}
-      {getArms(status, shirtColor)}
+      {getArms(status, shirtColor, skinGradId)}
 
-      {/* Legs (sitting) */}
-      <rect x="30" y="70" width="8" height="14" rx="3" fill="#4B5563" />
-      <rect x="42" y="70" width="8" height="14" rx="3" fill="#4B5563" />
+      {/* Legs (sitting) — slightly wider */}
+      <rect x="29" y="70" width="9" height="14" rx="3" fill="#4B5563" />
+      <rect x="42" y="70" width="9" height="14" rx="3" fill="#4B5563" />
       {/* Shoes */}
-      <ellipse cx="34" cy="85" rx="5" ry="3" fill="#1F2937" />
-      <ellipse cx="46" cy="85" rx="5" ry="3" fill="#1F2937" />
+      <ellipse cx="33.5" cy="85" rx="5.5" ry="3" fill="#1F2937" />
+      <ellipse cx="46.5" cy="85" rx="5.5" ry="3" fill="#1F2937" />
     </svg>
   );
 };

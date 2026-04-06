@@ -16,10 +16,18 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@superclaw/types": "workspace:*",
     "@clack/prompts": "^0.10.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuperSupeng/SuperClaw.git",
+    "directory": "packages/channel-cli"
+  },
+  "homepage": "https://github.com/SuperSupeng/SuperClaw",
+  "license": "Apache-2.0",
+  "keywords": ["ai", "agent", "multi-agent", "digital-workforce", "superclaw"]
 }

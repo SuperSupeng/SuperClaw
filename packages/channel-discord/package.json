@@ -16,10 +16,18 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@superclaw/types": "workspace:*",
     "discord.js": "^14.18.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuperSupeng/SuperClaw.git",
+    "directory": "packages/channel-discord"
+  },
+  "homepage": "https://github.com/SuperSupeng/SuperClaw",
+  "license": "Apache-2.0",
+  "keywords": ["ai", "agent", "multi-agent", "digital-workforce", "superclaw"]
 }

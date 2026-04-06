@@ -16,8 +16,16 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run --passWithNoTests"
   },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuperSupeng/SuperClaw.git",
+    "directory": "packages/channel-feishu"
+  },
+  "homepage": "https://github.com/SuperSupeng/SuperClaw",
+  "keywords": ["ai", "agent", "multi-agent", "digital-workforce", "superclaw", "feishu", "lark"],
   "dependencies": {
     "@superclaw/types": "workspace:*",
     "@larksuiteoapi/node-sdk": "^1.45.0"

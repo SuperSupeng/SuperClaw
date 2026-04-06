@@ -12,8 +12,22 @@
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "dependencies": {
     "@clack/prompts": "^0.10.0",
     "picocolors": "^1.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuperSupeng/SuperClaw.git",
+    "directory": "packages/create-superclaw"
+  },
+  "homepage": "https://github.com/SuperSupeng/SuperClaw",
+  "license": "Apache-2.0",
+  "keywords": ["ai", "agent", "multi-agent", "digital-workforce", "superclaw"]
 }

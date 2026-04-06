@@ -8,6 +8,6 @@
     "start": "superclaw start"
   },
   "dependencies": {
-    "superclaw": "^0.1.0"
+    "@superclaw-ai/cli": "^0.1.0"
   }
 }

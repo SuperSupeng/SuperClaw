@@ -11,6 +11,7 @@ export interface GatewayServer {
   start(): Promise<void>;
   stop(): Promise<void>;
   setAgentProvider(fn: () => AgentRuntime[]): void;
+  setMessageHandler(fn: (msg: IncomingMessage) => Promise<void>): void;
 }
 
 interface GatewayDeps {
@@ -148,6 +149,10 @@ export function createGatewayServer(
   return {
     setAgentProvider(fn: () => AgentRuntime[]) {
       getAgents = fn;
+    },
+
+    setMessageHandler(fn: (msg: IncomingMessage) => Promise<void>) {
+      messageHandler = fn;
     },
 
     start(): Promise<void> {

@@ -200,6 +200,7 @@ export async function createApp(configPath?: string): Promise<SuperClawApp> {
   });
 
   gateway.setAgentProvider(() => agentManager.getAllAgents());
+  gateway.setMessageHandler((msg) => router.handleIncoming(msg));
 
   // Wire decision engine: listen for Type 1 decisions from agent responses
   eventBus.on("message:responded", ({ agentId, response }) => {

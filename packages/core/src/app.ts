@@ -22,14 +22,18 @@ import { createRouter, type Router } from "./router/router.js";
 import { createModelRouter } from "./model/model-router.js";
 import { createOpenAICompatibleProvider } from "./model/providers/openai-compatible.js";
 import { createToolRegistry, type ToolRegistry } from "./tool/tool-registry.js";
+import { createMCPClientManager, type MCPClientManager } from "./mcp/mcp-client.js";
 import { createMemoryManager } from "./memory/memory-manager.js";
 import { createAgentManager, type AgentManager } from "./agent/agent-manager.js";
 import { createSignalBus } from "./signal/signal-bus.js";
+import { createSLAMonitor } from "./signal/sla-monitor.js";
 import { createOrganizationTree } from "./team/organization-tree.js";
 import { createDelegationManager, type DelegationManager } from "./team/delegation.js";
 import { createCronScheduler, type CronScheduler } from "./cron/cron-scheduler.js";
 import { createLaneManager } from "./lane/lane-manager.js";
 import { createDecisionEngine } from "./decision/decision-engine.js";
+import { createAutoDream } from "./memory/auto-dream.js";
+import { createHeartbeatExecutor } from "./memory/heartbeat-executor.js";
 
 /**
  * 尝试动态导入 channel adapter
@@ -85,13 +89,20 @@ export async function createApp(configPath?: string): Promise<SuperClawApp> {
   // 5. Memory Manager
   const memoryManager = createMemoryManager();
 
+  // 5.5 MCP Client Manager (optional)
+  let mcpManager: MCPClientManager | undefined;
+  if (config.mcp?.servers && config.mcp.servers.length > 0) {
+    mcpManager = createMCPClientManager(config.mcp.servers, logger);
+  }
+
   // 6. Tool Registry Factory (每个 Agent 独立的工具集)
   const toolRegistryFactory = (agentConfig: AgentConfig): ToolRegistry => {
-    return createToolRegistry(agentConfig.tools ?? [], logger);
+    return createToolRegistry(agentConfig.tools ?? [], logger, mcpManager);
   };
 
   // 7. Signal Bus + Team Layer (optional)
   const signalBus = createSignalBus(eventBus);
+  const slaMonitor = createSLAMonitor(signalBus, eventBus, logger);
 
   let delegationManager: DelegationManager | undefined;
   let _lazyAgentManager: AgentManager | undefined;
@@ -133,7 +144,24 @@ export async function createApp(configPath?: string): Promise<SuperClawApp> {
   // 8.6 Decision Engine — 双向门决策引擎
   const decisionEngine = createDecisionEngine({ eventBus, logger });
 
-  // 8.7 Cron Scheduler — 定时任务
+  // 8.7 AutoDream — 记忆自动整理
+  const autoDream = createAutoDream({
+    memoryManager,
+    modelRouter,
+    agentConfigs: config.agents,
+    eventBus,
+    logger,
+  });
+
+  // 8.8 Heartbeat Executor — HEARTBEAT.md 定时执行
+  const heartbeatExecutor = createHeartbeatExecutor({
+    memoryManager,
+    agentConfigs: config.agents,
+    eventBus,
+    logger,
+  });
+
+  // 8.9 Cron Scheduler — 定时任务
   let cronScheduler: CronScheduler | undefined;
   if (config.cron?.enabled !== false && config.cron?.jobs && config.cron.jobs.length > 0) {
     cronScheduler = createCronScheduler(config.cron, { eventBus, logger });
@@ -226,7 +254,7 @@ export async function createApp(configPath?: string): Promise<SuperClawApp> {
       );
       // AgentManager 需要用新的 modelRouter，重建
       const newToolRegistryFactory = (agentCfg: AgentConfig): ToolRegistry => {
-        return createToolRegistry(agentCfg.tools ?? [], logger);
+        return createToolRegistry(agentCfg.tools ?? [], logger, mcpManager);
       };
       const newAgentManager = createAgentManager(freshConfig.agents, {
         modelRouter: newModelRouter,
@@ -372,6 +400,12 @@ export async function createApp(configPath?: string): Promise<SuperClawApp> {
 
       logger.info("Starting SuperClaw...");
 
+      // Connect MCP servers (before booting agents, so tools are available)
+      if (mcpManager) {
+        await mcpManager.connectAll();
+        logger.info("MCP servers connected");
+      }
+
       // Boot all agents
       await agentManager.bootAll();
 
@@ -390,11 +424,22 @@ export async function createApp(configPath?: string): Promise<SuperClawApp> {
         }
       }
 
+      // Start SLA monitor
+      slaMonitor.start();
+
       // Start cron scheduler
       if (cronScheduler) {
         cronScheduler.start();
         logger.info("Cron scheduler started");
       }
+
+      // Start heartbeat executor
+      heartbeatExecutor.start();
+      logger.info("Heartbeat executor started");
+
+      // Start autoDream memory consolidation
+      autoDream.start();
+      logger.info("AutoDream memory consolidation started");
 
       // Start router
       router.start();
@@ -432,10 +477,19 @@ export async function createApp(configPath?: string): Promise<SuperClawApp> {
         configWatcher = null;
       }
 
+      // Stop SLA monitor
+      slaMonitor.stop();
+
       // Stop cron scheduler
       if (cronScheduler) {
         cronScheduler.stop();
       }
+
+      // Stop heartbeat executor
+      heartbeatExecutor.stop();
+
+      // Stop autoDream
+      autoDream.stop();
 
       await gateway.stop();
       router.stop();
@@ -450,6 +504,12 @@ export async function createApp(configPath?: string): Promise<SuperClawApp> {
       }
 
       await agentManager.shutdownAll();
+
+      // Disconnect MCP servers
+      if (mcpManager) {
+        await mcpManager.disconnectAll();
+        logger.info("MCP servers disconnected");
+      }
 
       logger.info("SuperClaw stopped");
     },

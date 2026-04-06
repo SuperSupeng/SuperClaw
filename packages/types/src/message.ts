@@ -6,7 +6,7 @@
 // ============================================================================
 
 /** 消息来源类型 */
-export type MessageSourceType = "dm" | "group" | "channel" | "cli" | "webhook" | "signal" | "cron";
+export type MessageSourceType = "dm" | "group" | "channel" | "cli" | "webhook" | "signal" | "cron" | "heartbeat";
 
 /** 附件 */
 export interface Attachment {

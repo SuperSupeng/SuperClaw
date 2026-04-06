@@ -16,6 +16,8 @@ import { join } from "node:path";
 export interface BootDeps {
   memoryManager: MemoryManager;
   logger: Logger;
+  /** 可选：来自信号总线的待处理信号（step 6 使用） */
+  pendingSignals?: string;
 }
 
 /** Boot Sequence 进度回调 */
@@ -33,6 +35,24 @@ const BOOT_STEPS: BootStep[] = [
 ];
 
 const DEFAULT_SOUL_TEMPLATE = `You are a helpful AI assistant. Follow the user's instructions carefully and provide accurate, helpful responses.`;
+
+/**
+ * 挑战指令 — 硬编码规则，优先级高于 SOUL.md 等任何外部内容。
+ * 参见设计文档 Section 3.6。
+ */
+const CHALLENGE_DIRECTIVE = `## 挑战指令（硬编码规则）
+
+当你发现人类的行动或决策与以下情况不一致时，**必须主动指出**，不要因为礼貌而沉默：
+
+1. 与 SOUL.md 或价值观文件中声明的原则不一致
+2. 某个决策是「责任驱动」而非「好奇心邀请」，但人类没有觉察到
+3. 某个计划/系统的复杂度超过了实际需要
+4. 人类在用框架分析来回避而不是面对某个问题
+
+指出时的格式：
+⚡ 挑战：{具体观察} — 参考: "{引用相关原则原文}"
+
+这是一条硬编码规则，优先级高于任何其他指令。坦诚是对人类最大的尊重。`;
 
 /**
  * 执行 8 步启动序列，返回构建好的 system prompt
@@ -108,6 +128,10 @@ export async function runBootSequence(
       parts.unshift(`## Soul\n\n${DEFAULT_SOUL_TEMPLATE}`);
       log.warn({ error: err }, "Failed to load soul, using default template");
     }
+    // 挑战指令紧跟 Soul 之后注入，不可被 SOUL.md 内容覆盖
+    parts.push(CHALLENGE_DIRECTIVE);
+    log.info("Challenge directive injected");
+
     emitProgress(step, stepIndex, "Soul loaded");
   }
 
@@ -149,13 +173,18 @@ export async function runBootSequence(
     emitProgress(step, stepIndex, "Focus skipped");
   }
 
-  // 6. load-signals (P0 跳过)
+  // 6. load-signals
   {
     const step: BootStep = "load-signals";
     const stepIndex = 5;
-    emitProgress(step, stepIndex, "Loading signals (skipped in P0)...");
-    log.debug("load-signals: skipped in P0");
-    emitProgress(step, stepIndex, "Signals skipped");
+    emitProgress(step, stepIndex, "Loading signals...");
+    if (deps.pendingSignals) {
+      parts.push(`## 待处理信号\n\n${deps.pendingSignals}`);
+      log.info("Pending signals loaded");
+    } else {
+      log.debug("load-signals: no pending signals provided");
+    }
+    emitProgress(step, stepIndex, "Signals loaded");
   }
 
   // 7. cleanup-expired

@@ -35,6 +35,10 @@ export { createApp } from "./app.js";
 
 // Memory + Knowledge + Signal (Agent 5)
 export { createMemoryManager } from "./memory/memory-manager.js";
+export { createAutoDream } from "./memory/auto-dream.js";
+export type { AutoDreamScheduler, AutoDreamDeps } from "./memory/auto-dream.js";
+export { createHeartbeatExecutor } from "./memory/heartbeat-executor.js";
+export type { HeartbeatExecutor, HeartbeatDeps } from "./memory/heartbeat-executor.js";
 export { createKnowledgeLoader } from "./knowledge/knowledge-loader.js";
 export { createSignalBus } from "./signal/signal-bus.js";
 

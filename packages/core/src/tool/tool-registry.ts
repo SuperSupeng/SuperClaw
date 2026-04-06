@@ -4,6 +4,7 @@
 
 import type {
   ToolConfig,
+  MCPToolConfig,
   ToolDefinition,
   ToolExecutor,
   ToolResult,
@@ -12,6 +13,8 @@ import { ErrorCodes } from "@superclaw/types";
 import type { Logger } from "pino";
 import { createFunctionExecutor } from "./function-executor.js";
 import { createCLIExecutor } from "./cli-executor.js";
+import type { MCPClientManager } from "../mcp/mcp-client.js";
+import { validateToolSchema } from "../mcp/schema-validator.js";
 
 /** Tool Registry 接口 */
 export interface ToolRegistry {
@@ -31,16 +34,20 @@ export interface ToolRegistry {
 export function createToolRegistry(
   configs: ToolConfig[],
   logger: Logger,
+  mcpManager?: MCPClientManager,
 ): ToolRegistry {
   const log = logger.child({ module: "tool-registry" });
   const executors: ToolExecutor[] = [];
   let cachedDefinitions: ToolDefinition[] = [];
   let initialized = false;
 
+  // MCP tool name → serverId mapping (for routing execute calls)
+  const mcpToolServerMap = new Map<string, string>();
+
   // 按类型分组并创建执行器
   const functionConfigs = configs.filter((c) => c.type === "function");
   const cliConfigs = configs.filter((c) => c.type === "cli");
-  // MCP 暂不实现
+  const mcpConfigs = configs.filter((c): c is MCPToolConfig => c.type === "mcp");
 
   if (functionConfigs.length > 0) {
     executors.push(createFunctionExecutor(functionConfigs, log));
@@ -71,6 +78,31 @@ export function createToolRegistry(
           log.warn({ toolType: executor.toolType, error: err }, "Failed to get tool definitions");
         }
       }
+
+      // MCP 工具：从 mcpManager 获取，按 agent 配置过滤
+      if (mcpManager && mcpConfigs.length > 0) {
+        for (const mcpCfg of mcpConfigs) {
+          const serverTools = mcpManager.getTools(mcpCfg.server);
+          for (const tool of serverTools) {
+            // 如果配置了 tools 白名单，则只暴露指定工具
+            if (mcpCfg.tools && mcpCfg.tools.length > 0 && !mcpCfg.tools.includes(tool.name)) {
+              continue;
+            }
+            // Schema 校验
+            const validation = validateToolSchema(tool);
+            if (!validation.valid) {
+              log.warn(
+                { server: mcpCfg.server, tool: tool.name, errors: validation.errors },
+                "MCP tool schema validation failed, skipping",
+              );
+              continue;
+            }
+            allDefs.push(tool);
+            mcpToolServerMap.set(tool.name, mcpCfg.server);
+          }
+        }
+      }
+
       cachedDefinitions = allDefs;
       initialized = true;
       log.info("Tool registry initialized, %d tools available", cachedDefinitions.length);
@@ -87,6 +119,28 @@ export function createToolRegistry(
 
       const startTime = Date.now();
       log.debug({ tool: name, args }, "Executing tool");
+
+      // MCP 工具路由
+      const mcpServerId = mcpToolServerMap.get(name);
+      if (mcpServerId && mcpManager) {
+        try {
+          const result = await mcpManager.execute(mcpServerId, name, args);
+          result.duration = Date.now() - startTime;
+          log.debug(
+            { tool: name, success: result.success, duration: result.duration },
+            "MCP tool execution complete",
+          );
+          return result;
+        } catch (err) {
+          const error = err instanceof Error ? err : new Error(String(err));
+          return {
+            success: false,
+            output: "",
+            error: `${ErrorCodes.TOOL_EXECUTION_FAILED}: ${error.message}`,
+            duration: Date.now() - startTime,
+          };
+        }
+      }
 
       // 找到能处理这个工具的执行器
       for (const executor of executors) {
@@ -130,6 +184,14 @@ export function createToolRegistry(
           log.warn({ toolType: executor.toolType, error: err }, "Executor disposal failed");
         }
       }
+      if (mcpManager) {
+        try {
+          await mcpManager.disconnectAll();
+        } catch (err) {
+          log.warn({ error: err }, "MCP manager disconnection failed");
+        }
+      }
+      mcpToolServerMap.clear();
       cachedDefinitions = [];
       initialized = false;
     },

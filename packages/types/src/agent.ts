@@ -51,6 +51,8 @@ export interface AgentConfig {
   model: ModelConfig;
   /** 可用工具 */
   tools?: ToolConfig[];
+  /** 为 true 时自动注册全部框架内置工具（可与 tools 中的 builtin 项组合） */
+  includeBuiltins?: boolean;
   /** 知识源 */
   knowledge?: KnowledgeSourceConfig[];
   /** 所属团队 ID */

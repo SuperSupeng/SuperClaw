@@ -131,7 +131,7 @@ export async function runMigration(
     const agents = openclawConfig.agents?.list ?? [];
     for (const agent of agents) {
       if (!agent.agentDir) continue;
-      const srcDir = resolve(agent.agentDir);
+      const srcDir = resolve(sourceDir, agent.agentDir);
       if (!existsSync(srcDir)) continue;
 
       const destDir = join(outputDir, "agents", agent.id);

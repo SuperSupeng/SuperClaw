@@ -1,19 +1,27 @@
 // ============================================================================
 // Tool — 工具系统
 // ============================================================================
-// SuperClaw 的工具系统支持三种类型：
-// 1. function — 内置 JS 函数
-// 2. mcp     — MCP 协议工具（外部进程）
-// 3. cli     — CLI 命令工具（拥抱 CLI 趋势：feishu-cli, gh, vercel, etc.）
+// SuperClaw 的工具系统支持多种类型：
+// 1. function — 用户自定义 JS handler
+// 2. builtin  — 框架内置工具（由 core 注册）
+// 3. mcp      — MCP 协议工具（外部进程）
+// 4. cli      — CLI 命令工具（feishu-cli, gh, vercel, etc.）
 //
 // 设计理念：未来越来越多产品会提供 CLI 模式（飞书已开源 CLI），
 // Agent 通过 CLI 操作各种产品是必然趋势。SuperClaw 在 Tool 层原生支持。
 // ============================================================================
 
 /** 工具配置——联合类型，按 type 区分 */
-export type ToolConfig = FunctionToolConfig | MCPToolConfig | CLIToolConfig;
+export type ToolConfig = FunctionToolConfig | BuiltinToolConfig | MCPToolConfig | CLIToolConfig;
 
-/** 内置函数工具 */
+/** 框架内置函数工具（由 @superclaw/core 实现，无需 handler 路径） */
+export interface BuiltinToolConfig {
+  type: "builtin";
+  /** 内置工具名，如 get-current-time、read-file */
+  name: string;
+}
+
+/** 内置函数工具（用户自定义 JS handler） */
 export interface FunctionToolConfig {
   type: "function";
   /** 工具名称 */
@@ -109,14 +117,14 @@ export interface ToolDefinition {
   /** 参数 JSON Schema */
   parameters: Record<string, unknown>;
   /** 来源类型 */
-  source: "function" | "mcp" | "cli";
+  source: "function" | "builtin" | "mcp" | "cli";
 }
 
 /**
  * ToolExecutor 接口——每种工具类型必须实现
  *
  * 由 packages/core 中的具体类实现：
- * - FunctionToolExecutor
+ * - FunctionToolExecutor、BuiltinToolExecutor
  * - MCPToolExecutor
  * - CLIToolExecutor
  */

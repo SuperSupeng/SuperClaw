@@ -106,6 +106,9 @@ async function main(): Promise<void> {
     options: [
       { value: "cli", label: "CLI", hint: "Terminal interface" },
       { value: "discord", label: "Discord", hint: "Discord bot" },
+      { value: "feishu", label: "Feishu", hint: "Feishu (Lark) bot" },
+      { value: "dingtalk", label: "DingTalk", hint: "DingTalk bot" },
+      { value: "telegram", label: "Telegram", hint: "Telegram bot" },
     ],
     initialValues: ["cli"],
     required: true,
@@ -136,13 +139,17 @@ async function main(): Promise<void> {
   // Copy template
   await copyDir(templateDir, projectDir, vars);
 
-  // If discord channel selected, add discord config
-  if ((channels as string[]).includes("discord")) {
-    const configPath = join(projectDir, "superclaw.config.json");
-    try {
-      const raw = await readFile(configPath, "utf-8");
-      const config = JSON.parse(raw) as Record<string, unknown>;
-      const channelsConfig = config.channels as Record<string, unknown>;
+  const selectedChannels = channels as string[];
+
+  // Inject selected channel configs into superclaw.config.json
+  const configPath = join(projectDir, "superclaw.config.json");
+  try {
+    const raw = await readFile(configPath, "utf-8");
+    const config = JSON.parse(raw) as Record<string, unknown>;
+    const channelsConfig = config.channels as Record<string, unknown>;
+    const bindings = config.bindings as Array<Record<string, unknown>>;
+
+    if (selectedChannels.includes("discord")) {
       channelsConfig.discord = {
         type: "discord",
         enabled: true,
@@ -153,39 +160,77 @@ async function main(): Promise<void> {
           },
         },
       };
-
-      // Add discord binding
-      const bindings = config.bindings as Array<Record<string, unknown>>;
       bindings.push({
         channel: "discord",
         account: "default",
         agent: agentId,
       });
-
-      await writeFile(configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
-    } catch {
-      // Template may not have config yet, skip
     }
-  }
 
-  // If cli channel was deselected (only discord), remove cli from config
-  if (!(channels as string[]).includes("cli")) {
-    const configPath = join(projectDir, "superclaw.config.json");
-    try {
-      const raw = await readFile(configPath, "utf-8");
-      const config = JSON.parse(raw) as Record<string, unknown>;
-      const channelsConfig = config.channels as Record<string, unknown>;
+    if (selectedChannels.includes("feishu")) {
+      channelsConfig.feishu = {
+        type: "feishu",
+        enabled: true,
+        accounts: {
+          default: {
+            id: "default",
+            appId: "${FEISHU_APP_ID}",
+            appSecret: "${FEISHU_APP_SECRET}",
+          },
+        },
+      };
+      bindings.push({
+        channel: "feishu",
+        account: "default",
+        agent: agentId,
+      });
+    }
+
+    if (selectedChannels.includes("dingtalk")) {
+      channelsConfig.dingtalk = {
+        type: "dingtalk",
+        enabled: true,
+        accounts: {
+          default: {
+            id: "default",
+            appKey: "${DINGTALK_APP_KEY}",
+            appSecret: "${DINGTALK_APP_SECRET}",
+          },
+        },
+      };
+      bindings.push({
+        channel: "dingtalk",
+        account: "default",
+        agent: agentId,
+      });
+    }
+
+    if (selectedChannels.includes("telegram")) {
+      channelsConfig.telegram = {
+        type: "telegram",
+        enabled: true,
+        accounts: {
+          default: {
+            id: "default",
+            token: "${TELEGRAM_BOT_TOKEN}",
+          },
+        },
+      };
+      bindings.push({
+        channel: "telegram",
+        account: "default",
+        agent: agentId,
+      });
+    }
+
+    if (!selectedChannels.includes("cli")) {
       delete channelsConfig.cli;
-
-      const bindings = (config.bindings as Array<Record<string, unknown>>).filter(
-        (b) => b.channel !== "cli",
-      );
-      config.bindings = bindings;
-
-      await writeFile(configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
-    } catch {
-      // skip
+      config.bindings = bindings.filter((b) => b.channel !== "cli");
     }
+
+    await writeFile(configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
+  } catch {
+    // Template may not have config yet, skip
   }
 
   s.stop("Project created");

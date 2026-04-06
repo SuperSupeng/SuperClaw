@@ -3,6 +3,8 @@
 // ============================================================================
 
 import { resolve } from "node:path";
+import { createRequire } from "node:module";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import pino from "pino";
 import type {
   SuperClawApp,
@@ -21,7 +23,7 @@ import { createMessageQueue, type MessageQueue } from "./router/message-queue.js
 import { createRouter, type Router } from "./router/router.js";
 import { createModelRouter } from "./model/model-router.js";
 import { createOpenAICompatibleProvider } from "./model/providers/openai-compatible.js";
-import { createToolRegistry, type ToolRegistry } from "./tool/tool-registry.js";
+import { createToolRegistry, type ToolRegistry, type ToolRegistryOptions } from "./tool/tool-registry.js";
 import { createMCPClientManager, type MCPClientManager } from "./mcp/mcp-client.js";
 import { createMemoryManager } from "./memory/memory-manager.js";
 import { createAgentManager, type AgentManager } from "./agent/agent-manager.js";
@@ -31,39 +33,85 @@ import { createOrganizationTree } from "./team/organization-tree.js";
 import { createDelegationManager, type DelegationManager } from "./team/delegation.js";
 import { createCronScheduler, type CronScheduler } from "./cron/cron-scheduler.js";
 import { createLaneManager } from "./lane/lane-manager.js";
+
+function toolRegistryOptionsForAgent(agent: AgentConfig): ToolRegistryOptions {
+  const base = agent.workspace ?? agent.agentDir;
+  return {
+    workspaceRoot: base ? resolve(base) : resolve(process.cwd()),
+    includeBuiltins: agent.includeBuiltins,
+    allowedDomains: agent.sandbox?.allowedDomains,
+  };
+}
 import { createDecisionEngine } from "./decision/decision-engine.js";
 import { createAutoDream } from "./memory/auto-dream.js";
 import { createHeartbeatExecutor } from "./memory/heartbeat-executor.js";
 
 /**
- * 尝试动态导入 channel adapter
+ * 尝试动态导入 channel adapter。
+ * 先用调用方传入的 resolveFrom 上下文解析（覆盖独立安装场景），
+ * 再回退到当前模块自身的 import（覆盖 monorepo 场景）。
  */
 async function loadChannelAdapter(
   channelType: string,
   channelConfig: unknown,
   logger: pino.Logger,
+  resolveFrom?: string,
 ): Promise<MessageAdapter | null> {
-  try {
-    // 尝试导入对应的 channel 包
-    const mod = await import(`@superclaw/channel-${channelType}`);
-    // 各 channel 包导出的工厂函数命名规则：create{Type}Adapter
-    const factoryName = `create${channelType.charAt(0).toUpperCase()}${channelType.slice(1)}Adapter`;
+  const specifier = `@superclaw/channel-${channelType}`;
+  const factoryName = `create${channelType.charAt(0).toUpperCase()}${channelType.slice(1)}Adapter`;
+
+  async function tryImport(mod: Record<string, unknown>): Promise<MessageAdapter | null> {
     const factory = mod[factoryName] ?? mod.createAdapter ?? mod.default;
     if (typeof factory === "function") {
       return factory(channelConfig, logger) as MessageAdapter;
     }
     logger.warn({ channelType }, "Channel module found but no adapter factory exported");
     return null;
+  }
+
+  // Strategy 1: resolve from caller's package context (e.g. CLI)
+  if (resolveFrom) {
+    try {
+      const parentPath = resolveFrom.startsWith("file://")
+        ? fileURLToPath(resolveFrom)
+        : resolveFrom;
+      const req = createRequire(parentPath);
+      const resolved = pathToFileURL(req.resolve(specifier)).href;
+      const mod = await import(resolved);
+      return await tryImport(mod);
+    } catch {
+      // fall through to strategy 2
+    }
+  }
+
+  // Strategy 2: direct ESM import (works in monorepo / hoisted node_modules)
+  try {
+    const mod = await import(specifier);
+    return await tryImport(mod);
   } catch {
     logger.warn({ channelType }, "Channel adapter package not found");
     return null;
   }
 }
 
+export interface CreateAppOptions {
+  configPath?: string;
+  /** import.meta.url of the caller — used to resolve channel adapter packages */
+  resolveModulesFrom?: string;
+}
+
 /**
  * 创建 SuperClaw 应用实例
  */
-export async function createApp(configPath?: string): Promise<SuperClawApp> {
+export async function createApp(
+  configPathOrOpts?: string | CreateAppOptions,
+): Promise<SuperClawApp> {
+  const opts: CreateAppOptions =
+    typeof configPathOrOpts === "string"
+      ? { configPath: configPathOrOpts }
+      : configPathOrOpts ?? {};
+  const configPath = opts.configPath;
+  const resolveModulesFrom = opts.resolveModulesFrom;
   // 解析配置文件绝对路径（供 watcher 使用）
   const resolvedConfigPath = configPath ? resolve(configPath) : undefined;
 
@@ -97,7 +145,7 @@ export async function createApp(configPath?: string): Promise<SuperClawApp> {
 
   // 6. Tool Registry Factory (每个 Agent 独立的工具集)
   const toolRegistryFactory = (agentConfig: AgentConfig): ToolRegistry => {
-    return createToolRegistry(agentConfig.tools ?? [], logger, mcpManager);
+    return createToolRegistry(agentConfig.tools ?? [], logger, mcpManager, toolRegistryOptionsForAgent(agentConfig));
   };
 
   // 7. Signal Bus + Team Layer (optional)
@@ -173,7 +221,7 @@ export async function createApp(configPath?: string): Promise<SuperClawApp> {
   for (const [key, channelConfig] of Object.entries(config.channels)) {
     if (!channelConfig.enabled) continue;
     const channelType = channelConfig.type || key;
-    const adapter = await loadChannelAdapter(channelType, channelConfig, logger);
+    const adapter = await loadChannelAdapter(channelType, channelConfig, logger, resolveModulesFrom);
     if (adapter) {
       channelAdapters.set(channelType, adapter);
     }
@@ -255,7 +303,7 @@ export async function createApp(configPath?: string): Promise<SuperClawApp> {
       );
       // AgentManager 需要用新的 modelRouter，重建
       const newToolRegistryFactory = (agentCfg: AgentConfig): ToolRegistry => {
-        return createToolRegistry(agentCfg.tools ?? [], logger, mcpManager);
+        return createToolRegistry(agentCfg.tools ?? [], logger, mcpManager, toolRegistryOptionsForAgent(agentCfg));
       };
       const newAgentManager = createAgentManager(freshConfig.agents, {
         modelRouter: newModelRouter,
@@ -350,7 +398,7 @@ export async function createApp(configPath?: string): Promise<SuperClawApp> {
         const channelConfig = freshConfig.channels[key];
         if (!channelConfig?.enabled) continue;
         const channelType = channelConfig.type || key;
-        const adapter = await loadChannelAdapter(channelType, channelConfig, logger);
+        const adapter = await loadChannelAdapter(channelType, channelConfig, logger, resolveModulesFrom);
         if (adapter) {
           channelAdapters.set(key, adapter);
           try {

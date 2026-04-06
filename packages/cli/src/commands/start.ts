@@ -9,7 +9,10 @@ export async function startCommand(options: { config?: string }): Promise<void> 
   let app: Awaited<ReturnType<typeof createApp>>;
 
   try {
-    app = await createApp(options.config);
+    app = await createApp({
+      configPath: options.config,
+      resolveModulesFrom: import.meta.url,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(`${pc.red("✗")} Config error: ${message}`);

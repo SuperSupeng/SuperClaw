@@ -67,8 +67,6 @@ export function createRouter(deps: RouterDeps): Router {
       return;
     }
 
-    eventBus.emit("message:processing", { messageId: message.id, agentId });
-
     try {
       const response: OutgoingMessage = await agent.handleMessage(message);
 

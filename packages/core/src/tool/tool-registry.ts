@@ -2,9 +2,11 @@
 // Tool Registry — 工具注册中心
 // ============================================================================
 
+import { resolve } from "node:path";
 import type {
   ToolConfig,
   MCPToolConfig,
+  BuiltinToolConfig,
   ToolDefinition,
   ToolExecutor,
   ToolResult,
@@ -13,8 +15,20 @@ import { ErrorCodes } from "@superclaw/types";
 import type { Logger } from "pino";
 import { createFunctionExecutor } from "./function-executor.js";
 import { createCLIExecutor } from "./cli-executor.js";
+import { createBuiltinExecutor } from "./builtin-executor.js";
 import type { MCPClientManager } from "../mcp/mcp-client.js";
 import { validateToolSchema } from "../mcp/schema-validator.js";
+import { allBuiltinToolNames } from "./builtins/index.js";
+
+/** 创建 registry 时的运行时选项（内置工具需要工作区路径） */
+export interface ToolRegistryOptions {
+  /** 解析后的工作区绝对路径，供 read-file / write-file */
+  workspaceRoot: string;
+  /** 为 true 时注册全部框架内置工具 */
+  includeBuiltins?: boolean;
+  /** 来自 AgentConfig.sandbox.allowedDomains，供 web-fetch 域名限制 */
+  allowedDomains?: string[];
+}
 
 /** Tool Registry 接口 */
 export interface ToolRegistry {
@@ -28,6 +42,24 @@ export interface ToolRegistry {
   dispose(): Promise<void>;
 }
 
+function collectEnabledBuiltinNames(
+  configs: ToolConfig[],
+  includeBuiltinsFlag: boolean | undefined,
+): Set<string> {
+  const out = new Set<string>();
+  for (const c of configs) {
+    if ((c as BuiltinToolConfig).type === "builtin") {
+      out.add((c as BuiltinToolConfig).name);
+    }
+  }
+  if (includeBuiltinsFlag) {
+    for (const n of allBuiltinToolNames) {
+      out.add(n);
+    }
+  }
+  return out;
+}
+
 /**
  * 创建工具注册中心
  */
@@ -35,19 +67,42 @@ export function createToolRegistry(
   configs: ToolConfig[],
   logger: Logger,
   mcpManager?: MCPClientManager,
+  options?: ToolRegistryOptions,
 ): ToolRegistry {
   const log = logger.child({ module: "tool-registry" });
   const executors: ToolExecutor[] = [];
   let cachedDefinitions: ToolDefinition[] = [];
   let initialized = false;
 
+  const workspaceRoot = resolve(options?.workspaceRoot ?? process.cwd());
+
   // MCP tool name → serverId mapping (for routing execute calls)
   const mcpToolServerMap = new Map<string, string>();
 
-  // 按类型分组并创建执行器
-  const functionConfigs = configs.filter((c) => c.type === "function");
-  const cliConfigs = configs.filter((c) => c.type === "cli");
-  const mcpConfigs = configs.filter((c): c is MCPToolConfig => c.type === "mcp");
+  const enabledBuiltinNames = collectEnabledBuiltinNames(
+    configs,
+    options?.includeBuiltins,
+  );
+
+  // 非内置条目交给 function / cli 执行器（builtin 仅用于声明启用哪些内置工具）
+  const configsForDynamicExecutors = configs.filter((c) => c.type !== "builtin");
+
+  if (enabledBuiltinNames.size > 0) {
+    executors.push(
+      createBuiltinExecutor(
+        enabledBuiltinNames,
+        {
+          workspaceRoot,
+          allowedDomains: options?.allowedDomains,
+        },
+        log,
+      ),
+    );
+  }
+
+  const functionConfigs = configsForDynamicExecutors.filter((c) => c.type === "function");
+  const cliConfigs = configsForDynamicExecutors.filter((c) => c.type === "cli");
+  const mcpConfigs = configsForDynamicExecutors.filter((c): c is MCPToolConfig => c.type === "mcp");
 
   if (functionConfigs.length > 0) {
     executors.push(createFunctionExecutor(functionConfigs, log));

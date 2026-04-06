@@ -13,7 +13,7 @@ export { createModelRouter } from "./model/model-router.js";
 export type { ModelRouter, ModelProvider, ModelProviderFactory } from "./model/model-router.js";
 export { createOpenAICompatibleProvider } from "./model/providers/openai-compatible.js";
 export { createToolRegistry } from "./tool/tool-registry.js";
-export type { ToolRegistry } from "./tool/tool-registry.js";
+export type { ToolRegistry, ToolRegistryOptions } from "./tool/tool-registry.js";
 
 // Gateway + Router + Config (Agent 2)
 export { loadConfig } from "./config/loader.js";
@@ -31,7 +31,7 @@ export type { MessageQueue } from "./router/message-queue.js";
 export { createRouter } from "./router/router.js";
 export type { Router, RouterDeps } from "./router/router.js";
 export { createEventBus } from "./event-bus.js";
-export { createApp } from "./app.js";
+export { createApp, type CreateAppOptions } from "./app.js";
 
 // Memory + Knowledge + Signal (Agent 5)
 export { createMemoryManager } from "./memory/memory-manager.js";

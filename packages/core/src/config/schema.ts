@@ -47,6 +47,11 @@ const functionToolConfigSchema = z.object({
   handler: z.string(),
 });
 
+const builtinToolConfigSchema = z.object({
+  type: z.literal("builtin"),
+  name: z.string(),
+});
+
 const mcpToolConfigSchema = z.object({
   type: z.literal("mcp"),
   server: z.string(),
@@ -85,6 +90,7 @@ const cliToolConfigSchema = z.object({
 
 const toolConfigSchema = z.discriminatedUnion("type", [
   functionToolConfigSchema,
+  builtinToolConfigSchema,
   mcpToolConfigSchema,
   cliToolConfigSchema,
 ]);
@@ -97,6 +103,7 @@ const agentConfigSchema = z.object({
   lifecycle: z.enum(["persistent", "ephemeral"]),
   model: modelConfigSchema,
   tools: z.array(toolConfigSchema).optional(),
+  includeBuiltins: z.boolean().optional(),
   knowledge: z.array(knowledgeSourceConfigSchema).optional(),
   team: z.string().optional(),
   agentDir: z.string().optional(),

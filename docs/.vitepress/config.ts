@@ -4,11 +4,29 @@ export default defineConfig({
   title: "SuperClaw",
   description: "Build your digital workforce in minutes",
 
+  head: [
+    ["meta", { name: "og:title", content: "SuperClaw" }],
+    [
+      "meta",
+      {
+        name: "og:description",
+        content: "The first open-source framework for building digital organizations",
+      },
+    ],
+  ],
+
   themeConfig: {
     nav: [
       { text: "Guide", link: "/guide/getting-started" },
       { text: "API", link: "/api/" },
       { text: "Examples", link: "/examples/" },
+      {
+        text: "Language",
+        items: [
+          { text: "English", link: "/" },
+          { text: "中文 (GitHub)", link: "https://github.com/SuperSupeng/SuperClaw/blob/main/README_zh.md" },
+        ],
+      },
     ],
 
     sidebar: {
@@ -35,12 +53,13 @@ export default defineConfig({
           ],
         },
         {
-          text: "Agent Packages",
+          text: "Packages",
           items: [
             { text: "@superclaw/core", link: "/guide/packages/core" },
             { text: "@superclaw/cli", link: "/guide/packages/cli" },
             { text: "@superclaw/channel-cli", link: "/guide/packages/channel-cli" },
             { text: "@superclaw/channel-discord", link: "/guide/packages/channel-discord" },
+            { text: "@superclaw/channel-feishu", link: "/guide/packages/channel-feishu" },
             { text: "create-superclaw", link: "/guide/packages/create-superclaw" },
           ],
         },
@@ -58,6 +77,11 @@ export default defineConfig({
 
     search: {
       provider: "local",
+    },
+
+    editLink: {
+      pattern: "https://github.com/SuperSupeng/SuperClaw/edit/main/docs/:path",
+      text: "Edit this page on GitHub",
     },
   },
 });

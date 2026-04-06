@@ -6,6 +6,8 @@
 [![npm version](https://img.shields.io/npm/v/@superclaw/core.svg)](https://www.npmjs.com/package/@superclaw/core)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+English | [中文](./README_zh.md)
+
 Most agent frameworks give you a single smart loop. SuperClaw gives you an org chart -- agents with roles, reporting lines, async communication, and memory that decays like a real company's institutional knowledge. Define your digital workforce in config, wire it to channels (CLI, Discord, Feishu), and let them collaborate.
 
 ## Quick Start
@@ -111,7 +113,9 @@ Everything in SuperClaw is built from six concepts:
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and guidelines.
+We welcome contributions from developers worldwide! See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and guidelines.
+
+[贡献指南 (中文)](./CONTRIBUTING_zh.md)
 
 ## License
 

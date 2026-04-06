@@ -8,6 +8,7 @@ import { startCommand } from "./commands/start.js";
 import { initCommand } from "./commands/init.js";
 import { addAgentCommand } from "./commands/add-agent.js";
 import { migrateCommand } from "./commands/migrate.js";
+import { doctorCommand } from "./commands/doctor.js";
 
 const cli = cac("superclaw");
 
@@ -64,6 +65,12 @@ cli
       });
     },
   );
+
+cli
+  .command("doctor", "Run environment diagnostics")
+  .action(async () => {
+    await doctorCommand();
+  });
 
 cli.help();
 cli.version("0.1.0");

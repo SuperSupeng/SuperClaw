@@ -1,6 +1,6 @@
 {
   "name": "@superclaw-ai/channel-feishu",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Feishu/Lark channel adapter for SuperClaw",
   "type": "module",
   "exports": {

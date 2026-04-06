@@ -1,6 +1,6 @@
 {
   "name": "@superclaw-ai/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SuperClaw CLI — build your digital workforce",
   "type": "module",
   "bin": {

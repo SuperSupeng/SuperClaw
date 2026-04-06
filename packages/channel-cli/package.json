@@ -1,6 +1,6 @@
 {
   "name": "@superclaw-ai/channel-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI channel adapter for SuperClaw — interact with agents in the terminal",
   "type": "module",
   "exports": {
